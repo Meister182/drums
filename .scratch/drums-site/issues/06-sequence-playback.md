@@ -2,7 +2,7 @@
 id: "06"
 title: Design sequence playback
 labels: [wayfinder:prototype]
-blocked_by: ["02"]
+blocked_by: ["01"]
 status: open
 assignee:
 ---

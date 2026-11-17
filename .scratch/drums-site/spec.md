@@ -34,6 +34,9 @@ Settled before charting:
 
 Skills: `grilling`, `domain-modeling`, `prototype`, `research`.
 
+Order: prototype the practice UI before locking the schema, so the teacher
+reacts to something concrete instead of a field list.
+
 ## Decisions so far
 
 - [Research notation rendering and PDF export](issues/03-notation-research.md):
@@ -45,6 +48,9 @@ Skills: `grilling`, `domain-modeling`, `prototype`, `research`.
 - [Stand up GitHub Pages hosting](issues/07-github-pages.md):
   live at <https://meister182.github.io/drums-page/> from `Meister182/drums-page`,
   legacy Pages on `main`, push to redeploy.
+- [Settle the rhythm model and the align helper](issues/01-settle-rhythm-model.md):
+  clicks per bar (1, 2, 4), tempo in clicks per minute, notes per click (1 to 6),
+  continuous tiling, align helper on `S mod C = 0`, advisory and per combination.
 
 ## Not yet specified
 

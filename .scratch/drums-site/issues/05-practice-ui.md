@@ -2,7 +2,7 @@
 id: "05"
 title: Design the practice UI
 labels: [wayfinder:prototype]
-blocked_by: ["01", "02"]
+blocked_by: ["01"]
 status: open
 assignee:
 ---

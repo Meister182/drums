@@ -7,8 +7,12 @@ exercises, their combinations, and the sequences they are played in.
 
 **Pulse**:
 The recurring hit that marks the fixed time. Its note value (whole, half,
-quarter) sets how many pulses fit in a bar and how long each subdivision lasts.
+quarter) sets how many pulses fit in a bar: 1, 2, or 4.
 _Avoid_: beat, click track, fixed time
+
+**Tempo**:
+The rate of the check, counted in clicks per minute.
+_Avoid_: BPM, beats per minute, speed
 
 **Subdivision**:
 The number of strokes played inside one pulse, 1 to 6 in v1.
