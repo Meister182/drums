@@ -42,6 +42,9 @@ Skills: `grilling`, `domain-modeling`, `prototype`, `research`.
 - [Research drum samples and licensing](issues/04-samples-research.md):
   MuldjordKit FreePats edition (CC BY 4.0, 2.5 MB shipped), synthesized click,
   lookahead scheduler; credit "Drum samples provided by DrumGizmo.org."
+- [Stand up GitHub Pages hosting](issues/07-github-pages.md):
+  live at <https://meister182.github.io/drums-page/> from `Meister182/drums-page`,
+  legacy Pages on `main`, push to redeploy.
 
 ## Not yet specified
 

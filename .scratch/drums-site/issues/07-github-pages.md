@@ -3,7 +3,7 @@ id: "07"
 title: Stand up GitHub Pages hosting
 labels: [wayfinder:task]
 blocked_by: []
-status: open
+status: closed
 assignee: Alexandre Marques
 ---
 
@@ -20,3 +20,22 @@ project-site path.
 The agent drives it where it has access, otherwise it hands the teacher an exact
 checklist. The resolution records: account name, repo URL, published URL, how to
 redeploy, and anything the teacher must do by hand.
+
+## Resolution
+
+Done, agent-driven. Account `Meister182`, `gh` already authenticated.
+
+- Repo: <https://github.com/Meister182/drums-page> (public)
+- Published: <https://meister182.github.io/drums-page/> (HTTP 200, serves
+  `index.html`)
+- CV site: <https://meister182.github.io/> still returns 200, unaffected
+- Local: branch `main` tracks `origin/main`; `origin` points at the new repo
+- Pages: legacy build type, source branch `main`, root path
+- Redeploy: `git push` to `main`, Pages rebuilds in about 30 seconds
+
+Placeholder `index.html` at the repo root is what is served now; the real app
+replaces it. When the app gains a build step, switch Pages to a GitHub Actions
+workflow; no other hosting change is needed.
+
+Nothing left for the teacher to do by hand. Sample credit line still has to
+appear on the site, tracked in the build spec.
