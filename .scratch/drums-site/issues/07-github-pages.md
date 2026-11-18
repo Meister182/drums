@@ -38,7 +38,7 @@ replaces it. When the app gains a build step, switch Pages to a GitHub Actions
 workflow; no other hosting change is needed.
 
 Renamed from `drums-page` to `drums` on 2026-11-18 for a shorter URL. The old
-repo and Pages URLs redirect to the new ones.
+repo URL redirects; the old Pages URL returns 404, so links must use the new one.
 
 Nothing left for the teacher to do by hand. Sample credit line still has to
 appear on the site, tracked in the build spec.
