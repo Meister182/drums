@@ -19,22 +19,32 @@ tempo, and plays it. Students open a link and practise.
 
 Settled as of 2026-11-18:
 
-- Table first, settings under it, sheet at the bottom. The sheet header holds
-  bars, time signature, tempo and Play.
-- Columns are rates, every integer from 1 to 16 notes per bar, switchable on
-  and off. Standard values get a name (whole, half, dotted, quarter, eighth,
-  sixteenth); the rest are tuplets over the bar.
+- Page order: table first, then the score panel with its config bar and sheet.
+  The table carries the notes-per-bar chips and a line describing the current
+  cell.
+- The grid always shows 1 to 16 notes per bar. Deselected counts are greyed out
+  and their cells disabled.
 - Rows are stickings: singles, doubles, single paradiddle, double paradiddle,
   paradiddle-diddle. Custom rows are not decided.
 - Time signature is selectable: 2/4, 3/4, 4/4, 6/8, 12/8, default 4/4. Tempo is
   BPM counting the metronome beat, which is the quarter in x/4 and the dotted
   quarter in 6/8 and 12/8.
-- Sheets lay out up to four bars per line, fewer when the rate needs the room.
+- Sheets lay out up to four bars per line, fewer when the rate needs the room,
+  with the bars connected and one clef per line.
+- The sheet renders the whole play order when cells are selected, and the
+  current cell alone otherwise. It lives in its own scroll box so the table
+  stays in place, and clicking a cell scrolls the page to it.
+- Playing highlights the current cell in the table and the current note in the
+  sheet, and scrolls the sheet box to keep the note visible.
 - The metronome is an independent layer on the beats, with its own instrument,
   even when a stroke uses the same instrument.
 - R strokes and L strokes each get an instrument; feet are just instruments.
 - Shift-click and shift-drag build a play order across cells, numbered in
-  click order. Right-click gives a cell its own bars or R/L instruments.
+  click order.
+- A cell can carry its own bars, metronome and R/L instruments through "Change
+  only this cell". Overridden cells are marked and can be reset. Config changes
+  without that toggle update the shared settings.
+- Page scroll is preserved across config changes.
 - No alignment helper, no leftover math.
 
 Dropped in the pivot: the old clicks-per-bar and notes-per-click axes, student

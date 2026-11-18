@@ -109,49 +109,11 @@ p {
   color: var(--muted);
 }
 
-.label .muted {
-  text-transform: none;
-  letter-spacing: 0;
-  font-weight: 400;
-}
-
-.label b {
-  color: var(--ink);
-}
-
 .row {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
   flex-wrap: wrap;
-}
-
-.check {
-  display: flex;
-  gap: 5px;
-  align-items: center;
-  font-size: 13px;
-  color: var(--muted);
-}
-
-select,
-input[type="number"] {
-  font: inherit;
-  font-size: 14px;
-  padding: 6px 8px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fff;
-  color: var(--ink);
-}
-
-input[type="number"] {
-  width: 62px;
-}
-
-input[type="range"] {
-  width: 120px;
-  accent-color: var(--accent);
 }
 
 .btn,
@@ -184,10 +146,86 @@ input[type="range"] {
   min-width: 74px;
 }
 
+select,
+input[type="number"] {
+  font: inherit;
+  font-size: 14px;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+}
+
+input[type="number"] {
+  width: 62px;
+}
+
+input[type="range"] {
+  width: 110px;
+  accent-color: var(--accent);
+}
+
 /* Table ------------------------------------------------------------------ */
 
 .table-panel {
   padding: 10px;
+}
+
+.rates-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: center;
+  padding: 2px 4px 8px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.chip {
+  font: inherit;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  min-width: 28px;
+  padding: 4px 6px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #f1efe8;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.chip.on {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+
+.current-cell {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  align-items: center;
+  margin: 0 4px 8px;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #faf8f2;
+  font-size: 13px;
+}
+
+.badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 999px;
+  padding: 2px 8px;
 }
 
 .table-wrap {
@@ -196,7 +234,6 @@ input[type="range"] {
 
 table.grid {
   border-collapse: collapse;
-  width: 100%;
 }
 
 table.grid th,
@@ -252,6 +289,11 @@ table.grid th.corner {
   color: #fff;
 }
 
+.colhead.off {
+  opacity: 0.3;
+  cursor: default;
+}
+
 .rowhead {
   border: 0;
   background: transparent;
@@ -288,6 +330,15 @@ table.grid th.corner {
   background: var(--accent-soft);
 }
 
+.cell.off {
+  opacity: 0.22;
+  cursor: default;
+}
+
+.cell.off:hover {
+  background: #fff;
+}
+
 .cell .num {
   font-size: 12px;
   font-weight: 700;
@@ -322,93 +373,9 @@ table.grid th.corner {
   box-shadow: 0 0 0 2px #a63d1b inset;
 }
 
-.editor {
-  margin-top: 10px;
-  padding: 10px;
-  border: 1px solid var(--select);
-  background: var(--select-soft);
-  border-radius: 8px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 16px;
-  align-items: flex-end;
-}
-
-.editor-title {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 200px;
-  margin-right: auto;
-}
-
-.editor label {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--muted);
-}
-
-/* Config ----------------------------------------------------------------- */
-
-.config {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px 24px;
-  align-items: flex-end;
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.rates-field {
-  flex-basis: 100%;
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  align-items: center;
-}
-
-.chip {
-  font: inherit;
-  font-size: 12px;
-  font-variant-numeric: tabular-nums;
-  min-width: 28px;
-  padding: 4px 6px;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: #f1efe8;
-  color: var(--muted);
-  cursor: pointer;
-}
-
-.chip.on {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: #fff;
-}
-
-.voice-row {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.voice-row label {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 12px;
-  color: var(--muted);
+.cell.override {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
 }
 
 /* Sheet ------------------------------------------------------------------ */
@@ -421,17 +388,19 @@ table.grid th.corner {
 
 .combo-head {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px 18px;
-  align-items: flex-end;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.transport {
+.configbar {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 10px 16px;
   align-items: flex-end;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #faf8f2;
 }
 
 .inline-field {
@@ -450,10 +419,24 @@ table.grid th.corner {
   font-size: 12px;
 }
 
+.switch {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--muted);
+  padding-bottom: 7px;
+}
+
+.configbar .play {
+  margin-left: auto;
+}
+
 .sheet {
   position: relative;
   width: 100%;
-  overflow-x: auto;
+  max-height: 58vh;
+  overflow: auto;
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -494,12 +477,16 @@ table.grid th.corner {
     padding: 10px;
   }
 
-  .combo-head {
-    align-items: flex-start;
+  .configbar {
+    gap: 8px 12px;
   }
 
-  .config {
-    gap: 12px 16px;
+  .configbar .play {
+    margin-left: 0;
+  }
+
+  .sheet {
+    max-height: 50vh;
   }
 
   input[type="range"] {
