@@ -3,8 +3,8 @@ id: "06"
 title: Design sequence playback
 labels: [wayfinder:prototype]
 blocked_by: ["01"]
-status: open
-assignee:
+status: closed
+assignee: Alexandre Marques
 ---
 
 ## Question
@@ -16,5 +16,9 @@ sequence, manual next and previous, what the playhead highlights, how tempo is
 per step or per sequence, and how the student starts, pauses, and restarts
 without losing their place.
 
-Prototype the transition between two steps and the count-in, at practice tempo.
-The resolution names the behaviour and links the prototype.
+## Resolution
+
+Out of scope as of 2026-11-18. The teacher pivoted to a single table of notes per
+bar by sticking and dropped sequences, paths, and auto-advance. Reopen this as a
+fresh effort if sequences come back; the link-carrying-a-combination idea lives
+on in the data model ticket instead.

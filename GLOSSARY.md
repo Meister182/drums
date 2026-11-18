@@ -1,54 +1,54 @@
 # Drums Exercise Site
 
-The vocabulary shared by a teacher and their students for describing drum
-exercises, their combinations, and the sequences they are played in.
+The vocabulary a teacher and their students use to describe drum exercises, the
+table they are picked from, and how each one sounds.
 
 ## Language
 
-**Pulse**:
-The recurring hit that marks the fixed time. Its note value (whole, half,
-quarter) sets how many pulses fit in a bar: 1, 2, or 4.
-_Avoid_: beat, click track, fixed time
-
-**Tempo**:
-The rate of the check, counted in clicks per minute.
-_Avoid_: BPM, beats per minute, speed
-
-**Subdivision**:
-The number of strokes played inside one pulse, 1 to 6 in v1.
-_Avoid_: group size, notes per group, rate
-
-**Sticking**:
-The hand pattern applied to a run of strokes: singles, doubles, triples,
-quadruples, or a paradiddle.
-_Avoid_: rudiment, pattern, sticking pattern
-
-**Voice**:
-A sound source that a part is played on: metronome click, snare, bass drum,
-ride, hi-hat, or toms.
-_Avoid_: instrument, sound, sample
-
-**Check**:
-The voice that plays the pulse, for example a metronome click or the ride.
-_Avoid_: time keeper, metronome line
+**Beat**:
+A quarter note in 4/4. Four beats to a bar.
+_Avoid_: pulse, click, count
 
 **Bar**:
-A 4/4 bar, four pulses in v1. An exercise plays for a number of bars.
+Four beats in 4/4. An exercise runs for a chosen number of bars.
 _Avoid_: measure
 
-**Combination**:
-One setting of pulse, subdivision, sticking, bar count, and voices.
-_Avoid_: exercise, variation, setting
+**Notes per bar**:
+The rate of an exercise: how many evenly spaced strokes fill one bar, from 1 to
+16. Each count has a written note value, with tuplets for the counts that are
+not standard values.
+_Avoid_: subdivision, group size, notes per click, rate
 
-**Sequence**:
-An ordered list of combinations played back to back.
-_Avoid_: set, routine, playlist
+**Sticking**:
+The hand pattern a run of strokes follows: singles, doubles, single paradiddle,
+double paradiddle, or paradiddle-diddle.
+_Avoid_: rudiment, pattern
+
+**R stroke and L stroke**:
+The two sides of the sticking. Every stroke is one or the other.
+_Avoid_: right hand, left hand, lead
+
+**Instrument**:
+The sound a stroke or the metronome plays: metronome click, snare, bass drum,
+ride, hi-hat, tom, or no sound. A foot is not a separate concept, it is just an
+instrument assigned to a side.
+_Avoid_: voice, sound, sample, limb
+
+**Metronome**:
+The independent layer that clicks every beat when switched on, on its own
+instrument. It keeps clicking even when a stroke plays the same instrument at
+the same instant.
+_Avoid_: check, click track, pulse
+
+**Combination**:
+One choice of notes per bar, sticking, bars, tempo, metronome, and instruments.
+_Avoid_: exercise, variation, setting
 
 **Tiling**:
 Continuing the sticking from one bar into the next without restarting it.
 _Avoid_: looping, carrying over
 
-**Align helper**:
-An advisory suggestion of a bar count where the sticking lands exactly on the
-last stroke. Any bar count can still be chosen.
-_Avoid_: ideal bars, auto-align
+**Column**:
+One notes-per-bar count on the table. Columns can be switched on and off for
+the exercise at hand.
+_Avoid_: rate, division

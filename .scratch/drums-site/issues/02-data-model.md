@@ -1,6 +1,6 @@
 ---
 id: "02"
-title: Decide the exercise and sequence data model
+title: Decide the exercise data model
 labels: [wayfinder:grilling]
 blocked_by: ["01"]
 status: open
@@ -9,17 +9,18 @@ assignee:
 
 ## Question
 
-Define the shape of what is authored, stored, shared, and exported.
+Define the shape of what is authored, stored, and eventually shared, now that
+the model is small.
 
-- Combination fields: name, pulse value, check voice, subdivision, sticking,
-  bar count, right-hand voice, left-hand voice, tempo, count-in.
+- Combination fields: notes per bar, sticking, bars, BPM, metronome on and its
+  instrument, R stroke instrument, L stroke instrument, and which columns are
+  enabled.
 - Which fields are optional and what the defaults are.
-- Sequence shape: ordered combinations, per-step overrides, loop, intro count-in,
-  title.
-- Share link encoding: how a sequence becomes a URL without a backend, how long
-  the link gets at a realistic size, and what happens when it is too long.
-- Local storage layout and versioning, plus the JSON export/import schema.
-- How a stored sequence migrates when the schema changes.
+- Whether the enabled column set belongs to the exercise or to the app.
+- How a custom sticking is stored once that is decided (letters, name).
+- Where state lives: browser storage only, or an exportable file, or a share
+  link that carries the combination.
+- Versioning and migration for the stored shape.
 
 The resolution is a schema, not prose: field names, types, defaults, and one
-example JSON document with an encoded link.
+example JSON document. Sequence playback is out of scope, so no sequence shape.

@@ -1,41 +1,43 @@
 ---
-title: "Drums exercise site: grid, practice view, sequences, sheets, hosting"
+title: "Drums exercise site: notes-per-bar table, sheet, playback, hosting"
 labels: [wayfinder:map]
 feature: drums-site
 ---
 
 ## Destination
 
-A build-ready spec for a free, static drums-exercise site: exercise grid,
-focused practice view, sequences, notation with PDF export, audio playback, and
-shareable links, deployed on GitHub Pages. Charting ends with the spec; building
-it is the second phase of this map.
+A build-ready spec for a free, static drums-exercise site: a table of notes per
+bar by sticking, the sheet and playback for the selected combination, metronome
+and instrument assignment, and a published link the teacher can share. Charting
+ends with the spec; building it is the second phase.
 
 ## Notes
 
-Domain: a drums teacher authors combinations of pulse, subdivision, sticking,
-bar count, and voices, and students practise them alone or as a sequence.
+Domain: a drums teacher picks a rate (notes per bar) and a sticking, assigns
+instruments to the R and L strokes, sets the bar count and tempo, and plays it.
+Students open a link and practise.
 
-Settled before charting:
+Settled after the pivot (2026-11-17):
 
-- Fixed 4/4 in v1.
-- Pulse note values: whole, half, quarter.
-- Subdivision: 1 to 6.
-- Sticking: singles, doubles, triples, quadruples, single paradiddle, double
-  paradiddle, triple paradiddle. Flams, drags, and rolls come later.
-- Sticking tiles continuously across the exercise; it does not restart at each
-  bar. A bar count that does not land neatly is allowed on purpose.
-- Voices are assignable, including per hand (right snare, left bass drum).
-- Content lives in browser local storage, with JSON export/import and share
-  links that carry a sequence. No accounts, no backend.
-- Student mode is the default for shared links; authoring is behind a toggle.
-- Hosting: GitHub Pages project site at `https://<user>.github.io/drums-page/`,
-  public repo.
+- 4/4 only. A bar is four quarter-note beats.
+- Columns are notes per bar, every integer from 1 to 16. Standard note values
+  get their name (whole, half, half triplet, quarter, quarter triplet, eighth,
+  eighth triplet, sixteenth); the rest are tuplets over the bar.
+- Columns can be switched on and off, so the table only shows what the current
+  exercise needs.
+- Rows are stickings: singles, doubles, single paradiddle, double paradiddle,
+  paradiddle-diddle. Custom rows are not decided.
+- Bar count is configurable. No alignment helper, no leftover math.
+- Tempo is BPM, counting quarter notes.
+- The metronome is a checkbox and plays the quarter notes, independent of the
+  sticking, on its own instrument, even when a stroke uses the same instrument.
+- Two sound layers: the R strokes and the L strokes each get an instrument, and
+  the metronome gets its own. That covers hand and foot voicings, for example R
+  on bass drum, L on snare, metronome on the ride.
+- Dropped in the pivot: sequence playback, paths, the align helper, student
+  mode, layout variants, the old clicks-per-bar and notes-per-click axes.
 
 Skills: `grilling`, `domain-modeling`, `prototype`, `research`.
-
-Order: prototype the practice UI before locking the schema, so the teacher
-reacts to something concrete instead of a field list.
 
 ## Decisions so far
 
@@ -48,22 +50,24 @@ reacts to something concrete instead of a field list.
 - [Stand up GitHub Pages hosting](issues/07-github-pages.md):
   live at <https://meister182.github.io/drums-page/> from `Meister182/drums-page`,
   legacy Pages on `main`, push to redeploy.
-- [Settle the rhythm model and the align helper](issues/01-settle-rhythm-model.md):
-  clicks per bar (1, 2, 4), tempo in clicks per minute, notes per click (1 to 6),
-  continuous tiling, align helper on `S mod C = 0`, advisory and per combination.
+- [Settle the rhythm model](issues/01-settle-rhythm-model.md):
+  notes per bar as the single rate axis, 4/4, configurable bars, BPM in quarter
+  notes, independent quarter-note metronome, R and L stroke instruments.
 
 ## Not yet specified
 
-- Phone and tablet layout, and keeping the screen awake while practising.
+- Custom stickings and how rows are added; the teacher is unsure and mentioned
+  hand-foot coordination.
+- Whether feet get their own layer or stay as instruments in the R/L list.
+- Whether the metronome rate is configurable beyond the quarter notes.
+- Phone layout details and keeping the screen awake while practising.
+- How an exercise or a set of them is saved and shared: links, files, both.
 - Print layout details beyond PDF export.
-- Rudiments beyond v1: flams, drags, rolls.
-- Tempo ramp, per-bar practice loops, and counted repeats.
-- Organising the exercise library once it grows past a handful of items.
-- Whether students need to save progress or favourite sequences.
 
 ## Out of scope
 
-- Accounts, login, and a teacher dashboard with student progress.
-- Native apps.
-- Backing tracks and recorded accompaniment.
-- Multiple teachers or per-student permissions.
+- Sequence playback, auto-advance and paths. Closed ticket:
+  [Design sequence playback](issues/06-sequence-playback.md).
+- The align helper and leftover-cycle badges. Dropped from the model.
+- Student mode, and layout variants B and C.
+- Accounts, a teacher dashboard, native apps, backing tracks.
