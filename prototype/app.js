@@ -6,10 +6,12 @@ import {
   Formatter,
   Beam,
   Tuplet,
+  Dot,
+  Barline,
 } from 'vexflow';
 
 // ---------------------------------------------------------------------------
-// Model. 4/4 always. One bar is four quarter-note beats.
+// Model. A combination is notes per bar plus a sticking, played for some bars.
 // ---------------------------------------------------------------------------
 
 const STICKINGS = [
@@ -30,30 +32,30 @@ const VOICES = [
   { id: 'none', label: 'No sound' },
 ];
 
-const COLUMNS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+const SIGNATURES = [
+  { id: '2/4', num: 2, den: 4 },
+  { id: '3/4', num: 3, den: 4 },
+  { id: '4/4', num: 4, den: 4 },
+  { id: '6/8', num: 6, den: 8 },
+  { id: '12/8', num: 12, den: 8 },
+];
 
-const NOTE_NAMES = {
-  1: 'whole',
-  2: 'half',
-  3: 'half trip',
-  4: 'quarter',
-  5: 'quint',
-  6: 'quarter trip',
-  7: 'sept',
+const RATES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+const COMMON_RATES = [1, 2, 3, 4, 6, 8, 12, 16];
+
+const PLAIN = { 4: 'w', 2: 'h', 1: 'q', 0.5: '8', 0.25: '16', 0.125: '32' };
+const DOTTED = { 6: 4, 3: 2, 1.5: 1, 0.75: 0.5, 0.375: 0.25, 0.1875: 0.125 };
+const VALUE_NAMES = {
+  w: 'whole',
+  h: 'half',
+  q: 'quarter',
   8: 'eighth',
-  9: '9-let',
-  10: '10-let',
-  11: '11-let',
-  12: '8th trip',
-  13: '13-tuplet',
-  14: '14-tuplet',
-  15: '15-tuplet',
-  16: 'sixteenth',
+  16: '16th',
+  32: '32nd',
 };
 
-const COMMON_COLUMNS = [1, 2, 3, 4, 6, 8, 12, 16];
-
 const state = {
+  sig: '4/4',
   notesPerBar: 12,
   sticking: 'singles',
   bars: 2,
@@ -62,37 +64,101 @@ const state = {
   metroVoice: 'click',
   right: 'snare',
   left: 'kick',
-  columns: COMMON_COLUMNS.slice(),
+  rates: COMMON_RATES.slice(),
   loop: false,
   countIn: false,
+  selection: [],
+  overrides: {},
+  editing: null,
 };
 
 // ---------------------------------------------------------------------------
 // Derived values.
 // ---------------------------------------------------------------------------
 
-const sticking = () => STICKINGS.find((s) => s.id === state.sticking);
-const totalStrokes = () => state.bars * state.notesPerBar;
+const signature = () => SIGNATURES.find((s) => s.id === state.sig) || SIGNATURES[2];
+const barQuarters = () => {
+  const s = signature();
+  return (s.num * 4) / s.den;
+};
+const beatsPerBar = () => {
+  const s = signature();
+  return s.den === 8 && s.num % 3 === 0 ? s.num / 3 : s.num;
+};
+const compound = () => signature().den === 8 && signature().num % 3 === 0;
+
+const stickingById = (id) => STICKINGS.find((s) => s.id === id) || STICKINGS[0];
+const sticking = () => stickingById(state.sticking);
 const voiceById = (id) => VOICES.find((v) => v.id === id) || VOICES[VOICES.length - 1];
 const voiceLabel = (id) => voiceById(id).label;
-const handVoice = (hand) => (hand === 'R' ? state.right : state.left);
-const strokeHands = () => {
-  const pattern = sticking().pattern;
-  return Array.from({ length: totalStrokes() }, (_, i) => pattern[i % pattern.length]);
-};
+const currentKey = () => `${state.sticking}|${state.notesPerBar}`;
 
-// Written note value, tuplet ratio and beam/tuplet group for N notes per bar.
+function strokeHands(stickingId, bars, n) {
+  const pattern = stickingById(stickingId).pattern;
+  return Array.from({ length: bars * n }, (_, i) => pattern[i % pattern.length]);
+}
+
+// Written note value, dots, tuplet ratio and grouping for N notes per bar.
 function grouping(n) {
-  if (n === 1) return { duration: 'w', ratio: null, group: 1 };
-  if (n === 2) return { duration: 'h', ratio: null, group: 2 };
-  if (n === 4) return { duration: 'q', ratio: null, group: 4 };
-  if (n === 8) return { duration: '8', ratio: null, group: 2 };
-  if (n === 16) return { duration: '16', ratio: null, group: 4 };
-  if (n === 3) return { duration: 'h', ratio: [3, 2], group: 3 };
-  if (n === 6) return { duration: 'q', ratio: [3, 2], group: 3 };
-  if (n === 12) return { duration: '8', ratio: [3, 2], group: 3 };
-  const base = n < 8 ? 4 : 8;
-  return { duration: base === 4 ? 'q' : '8', ratio: [n, base], group: n };
+  const Q = barQuarters();
+  const stroke = Q / n;
+  const beats = beatsPerBar();
+  const perBeat = n / beats;
+  const plainGroup = Number.isInteger(perBeat) && perBeat >= 1 ? perBeat : 1;
+
+  if (Q === 4 && n % 3 === 0) {
+    const k = n / 3;
+    if ([1, 2, 4, 8].includes(k)) {
+      const base = 2 / k;
+      return { duration: PLAIN[base], dots: 0, ratio: [3, 2], group: 3 };
+    }
+  }
+
+  if (PLAIN[stroke]) return { duration: PLAIN[stroke], dots: 0, ratio: null, group: plainGroup };
+  if (DOTTED[stroke]) return { duration: PLAIN[DOTTED[stroke]], dots: 1, ratio: null, group: plainGroup };
+
+  const values = [0.125, 0.25, 0.5, 1, 2, 4];
+  const value = values.find((v) => v >= stroke) || 4;
+  return { duration: PLAIN[value], dots: 0, ratio: [n, Q / value], group: n };
+}
+
+function rateName(n) {
+  const g = grouping(n);
+  if (g.ratio) {
+    if (g.ratio[0] === 3 && g.ratio[1] === 2) {
+      const base = VALUE_NAMES[g.duration] || '';
+      return n === 3 ? `${base} triplet` : `${base} triplets`;
+    }
+    return `${g.ratio[0]}:${g.ratio[1]}`;
+  }
+  const base = VALUE_NAMES[g.duration] || '';
+  return g.dots ? `dotted ${base}` : base;
+}
+
+// ---------------------------------------------------------------------------
+// Plan and overrides.
+// ---------------------------------------------------------------------------
+
+function resolveKey(key) {
+  const [stickingId, n] = key.split('|');
+  const over = state.overrides[key] || {};
+  return {
+    key,
+    sticking: stickingId,
+    n: Number(n),
+    bars: over.bars || state.bars,
+    right: over.right || state.right,
+    left: over.left || state.left,
+  };
+}
+
+function playPlan() {
+  const keys = state.selection.length ? state.selection : [currentKey()];
+  return keys.map(resolveKey);
+}
+
+function overrideCount() {
+  return Object.keys(state.overrides).length;
 }
 
 // ---------------------------------------------------------------------------
@@ -109,41 +175,122 @@ function render() {
 function shell() {
   return `
     ${topbarHTML()}
-    ${settingsHTML()}
-    ${columnsHTML()}
-    <div class="layout">
-      ${tableHTML()}
-      ${practiceHTML()}
-    </div>
+    ${tableHTML()}
+    ${configHTML()}
+    ${sheetHTML()}
   `;
 }
 
 const topbarHTML = () => `
   <header class="topbar">
     <div class="brand">Drum exercises <span class="tag">prototype</span></div>
+    <p class="muted small">
+      Table first, settings under it, sheet at the bottom. Shift-click cells to build a play order.
+    </p>
   </header>
 `;
 
-const voiceSelect = (which, label, withNone = true) => `
-  <label>
-    ${label}
-    <select data-act="voice" data-which="${which}">
-      ${VOICES.filter((v) => withNone || v.id !== 'none')
-        .map((v) => `<option value="${v.id}" ${state[which] === v.id ? 'selected' : ''}>${v.label}</option>`)
-        .join('')}
-    </select>
-  </label>
-`;
+function tableHTML() {
+  const columns = state.rates;
+  return `
+    <section class="panel table-panel">
+      <div class="table-wrap">
+        <table class="grid">
+          <thead>
+            <tr>
+              <th class="corner">sticking</th>
+              ${columns.map((n) => `
+                <th>
+                  <button class="colhead ${state.notesPerBar === n ? 'on' : ''}" data-act="column" data-value="${n}">
+                    <b>${n}</b><span>${rateName(n)}</span>
+                  </button>
+                </th>
+              `).join('')}
+            </tr>
+          </thead>
+          <tbody>
+            ${STICKINGS.map((s) => `
+              <tr>
+                <th>
+                  <button class="rowhead ${state.sticking === s.id ? 'on' : ''}" data-act="sticking" data-value="${s.id}">${s.label}</button>
+                </th>
+                ${columns.map((n) => cellHTML(s.id, n)).join('')}
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+      ${state.editing ? editorHTML(state.editing) : ''}
+      <p class="muted small">
+        Click a cell to open it in the sheet. Shift-click or shift-drag to add it to the play
+        order; click its number away to remove it. Right-click a cell for its own bars or sounds.
+      </p>
+    </section>
+  `;
+}
 
-const settingsHTML = () => `
-  <section class="panel settings">
-    <div class="field">
-      <span class="label">Bars</span>
-      <input type="number" min="1" max="16" value="${state.bars}" data-act="bars" />
+function cellHTML(stickingId, n) {
+  const key = `${stickingId}|${n}`;
+  const index = state.selection.indexOf(key);
+  const active = state.sticking === stickingId && state.notesPerBar === n;
+  const over = state.overrides[key];
+  return `
+    <td>
+      <button class="cell ${active ? 'active' : ''} ${index >= 0 ? 'selected' : ''}"
+        data-key="${key}" data-sticking="${stickingId}" data-column="${n}"
+        title="${n} notes per bar, ${stickingById(stickingId).label}${over ? ' (has overrides)' : ''}">
+        <span class="num">${index >= 0 ? index + 1 : ''}</span>
+        ${over ? '<span class="mark"></span>' : ''}
+      </button>
+    </td>
+  `;
+}
+
+function editorHTML(key) {
+  const over = state.overrides[key] || {};
+  const [stickingId, n] = key.split('|');
+  const barsOptions = Array.from({ length: 8 }, (_, i) => i + 1);
+  return `
+    <div class="editor">
+      <div class="editor-title">
+        <b>${n} notes per bar · ${stickingById(stickingId).label}</b>
+        <span class="muted small">Overrides apply when this cell plays in the order.</span>
+      </div>
+      <label>Bars
+        <select data-act="override" data-key="${key}" data-field="bars">
+          <option value="inherit">Use default (${state.bars})</option>
+          ${barsOptions.map((b) => `<option value="${b}" ${over.bars === b ? 'selected' : ''}>${b}</option>`).join('')}
+        </select>
+      </label>
+      <label>R strokes
+        <select data-act="override" data-key="${key}" data-field="right">
+          <option value="inherit">Use default (${voiceLabel(state.right)})</option>
+          ${VOICES.map((v) => `<option value="${v.id}" ${over.right === v.id ? 'selected' : ''}>${v.label}</option>`).join('')}
+        </select>
+      </label>
+      <label>L strokes
+        <select data-act="override" data-key="${key}" data-field="left">
+          <option value="inherit">Use default (${voiceLabel(state.left)})</option>
+          ${VOICES.map((v) => `<option value="${v.id}" ${over.left === v.id ? 'selected' : ''}>${v.label}</option>`).join('')}
+        </select>
+      </label>
+      <button class="btn ghost small" data-act="clear-overrides" data-key="${key}">Clear</button>
+      <button class="btn small" data-act="close-editor">Done</button>
     </div>
-    <div class="field">
-      <span class="label">Tempo <b data-bpm-label>${state.bpm}</b> BPM</span>
-      <input type="range" min="30" max="200" step="1" value="${state.bpm}" data-act="bpm" />
+  `;
+}
+
+const configHTML = () => `
+  <section class="panel config">
+    <div class="field rates-field">
+      <span class="label">Rates <span class="muted small">notes per bar</span></span>
+      <div class="chips">
+        ${RATES.map((n) => `
+          <button class="chip ${state.rates.includes(n) ? 'on' : ''}" data-act="toggle-rate" data-value="${n}">${n}</button>
+        `).join('')}
+        <button class="btn ghost small" data-act="common-rates">Common</button>
+        <button class="btn ghost small" data-act="all-rates">All</button>
+      </div>
     </div>
     <div class="field">
       <span class="label">Metronome</span>
@@ -173,89 +320,62 @@ const settingsHTML = () => `
   </section>
 `;
 
-// Columns the teacher wants on the table.
-const columnsHTML = () => `
-  <section class="panel columns">
-    <span class="label">Columns</span>
-    <div class="chips">
-      ${COLUMNS.map((n) => `
-        <button class="chip ${state.columns.includes(n) ? 'on' : ''}" data-act="toggle-column" data-value="${n}">${n}</button>
-      `).join('')}
-    </div>
-    <button class="btn ghost small" data-act="common-columns">Common only</button>
-    <button class="btn ghost small" data-act="all-columns">All</button>
-  </section>
+const voiceSelect = (which, label) => `
+  <label>
+    ${label}
+    <select data-act="voice" data-which="${which}">
+      ${VOICES.map((v) => `<option value="${v.id}" ${state[which] === v.id ? 'selected' : ''}>${v.label}</option>`).join('')}
+    </select>
+  </label>
 `;
 
-function tableHTML() {
-  const columns = state.columns;
-  return `
-    <section class="panel table-panel">
-      <div class="table-wrap">
-        <table class="grid">
-          <thead>
-            <tr>
-              <th class="corner">sticking</th>
-              ${columns.map((n) => `
-                <th>
-                  <button class="colhead ${state.notesPerBar === n ? 'on' : ''}" data-act="column" data-value="${n}">
-                    <b>${n}</b><span>${NOTE_NAMES[n]}</span>
-                  </button>
-                </th>
-              `).join('')}
-            </tr>
-          </thead>
-          <tbody>
-            ${STICKINGS.map((s) => `
-              <tr>
-                <th>
-                  <button class="rowhead ${state.sticking === s.id ? 'on' : ''}" data-act="sticking" data-value="${s.id}">${s.label}</button>
-                </th>
-                ${columns.map((n) => `
-                  <td>
-                    <button class="cell ${state.sticking === s.id && state.notesPerBar === n ? 'active' : ''}"
-                      data-act="combo" data-sticking="${s.id}" data-column="${n}"
-                      title="${n} notes per bar, ${s.label}"></button>
-                  </td>
-                `).join('')}
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      </div>
-      <p class="muted small">Click a column header to change notes per bar, a row header to change sticking, or a cell for both.</p>
-    </section>
-  `;
-}
-
-function practiceHTML() {
-  const group = grouping(state.notesPerBar);
-  const metro = state.metronome ? `Metronome on the quarters, on ${voiceLabel(state.metroVoice)}.` : 'Metronome off.';
+function sheetHTML() {
+  const g = grouping(state.notesPerBar);
+  const beats = beatsPerBar();
+  const plan = playPlan();
+  const order = state.selection.length
+    ? `${plan.length} ${plan.length === 1 ? 'cell' : 'cells'} in play order`
+    : 'playing this cell';
   return `
     <section class="panel practice">
       <header class="combo-head">
         <div>
-          <h2>${state.notesPerBar} notes per bar <span class="note-name">(${NOTE_NAMES[state.notesPerBar]})</span></h2>
+          <h2>${state.notesPerBar} notes per bar <span class="note-name">(${rateName(state.notesPerBar)})</span></h2>
           <p class="muted">
-            ${sticking().label} · ${state.bars} ${state.bars === 1 ? 'bar' : 'bars'} ·
-            ${totalStrokes()} strokes${group.ratio ? ` · ${group.ratio[0]}:${group.ratio[1]} tuplet` : ''}
+            ${sticking().label} · ${state.bars} ${state.bars === 1 ? 'bar' : 'bars'} · ${state.sig} ·
+            ${state.bars * state.notesPerBar} strokes · <span data-order>${order}</span>
           </p>
         </div>
-        <button class="play" data-act="play">${session ? 'Stop' : 'Play'}</button>
+        <div class="transport">
+          <label class="inline-field">Bars
+            <input type="number" min="1" max="16" value="${state.bars}" data-act="bars" />
+          </label>
+          <label class="inline-field">Sig
+            <select data-act="sig">
+              ${SIGNATURES.map((s) => `<option value="${s.id}" ${state.sig === s.id ? 'selected' : ''}>${s.id}</option>`).join('')}
+            </select>
+          </label>
+          <label class="inline-field">Tempo <b data-bpm-label>${state.bpm}</b>
+            <input type="range" min="30" max="200" step="1" value="${state.bpm}" data-act="bpm" />
+          </label>
+          <button class="play" data-act="play">${session ? 'Stop' : 'Play'}</button>
+        </div>
       </header>
       <div class="sheet" data-sheet></div>
       <div class="transport-row">
         <span class="status" data-status></span>
       </div>
       <p class="legend">
-        Sticking above the staff. R on ${voiceLabel(state.right)}, L on ${voiceLabel(state.left)}. ${metro}
+        Sticking above the staff. R on ${voiceLabel(state.right)}, L on ${voiceLabel(state.left)}.
+        ${state.metronome ? `Metronome on ${beats} ${beats === 1 ? 'beat' : 'beats'} per bar on ${voiceLabel(state.metroVoice)}.` : 'Metronome off.'}
+        ${g.ratio ? ` Notation is a ${g.ratio[0]}:${g.ratio[1]} tuplet.` : ''}
       </p>
     </section>
   `;
 }
 
 // ---------------------------------------------------------------------------
-// Notation.
+// Notation. Up to four bars per line.
 // ---------------------------------------------------------------------------
 
 let noteMeta = [];
@@ -268,21 +388,36 @@ function mountSheet() {
   noteMeta = [];
 
   const width = Math.max(300, Math.floor(host.getBoundingClientRect().width - 8));
-  const rowHeight = 176;
-  const height = state.bars * rowHeight + 44;
+  const minBarWidth = 24 * state.notesPerBar + 40;
+  const barsPerLine = Math.max(1, Math.min(4, Math.floor((width - 20) / (minBarWidth + 10))));
+  const systems = Math.max(1, Math.ceil(state.bars / barsPerLine));
+  const systemHeight = 186;
+  const height = systems * systemHeight + 34;
 
   const renderer = new Renderer(host, Renderer.Backends.SVG);
   renderer.resize(width, height);
   const ctx = renderer.getContext();
 
   const spec = grouping(state.notesPerBar);
-  const hands = strokeHands();
-  const metroNote = voiceById(state.metroVoice).note;
-  const showMetronome = state.metronome && Boolean(metroNote);
+  const hands = strokeHands(state.sticking, state.bars, state.notesPerBar);
+  const beatNote = compound() ? 1.5 : 1;
+  const metroDuration = compound() ? 'q' : 'q';
+  const showMetronome = state.metronome && Boolean(voiceById(state.metroVoice).note);
+  const beats = beatsPerBar();
 
   for (let bar = 0; bar < state.bars; bar += 1) {
-    const rowTop = bar * rowHeight;
-    const stave = new Stave(10, rowTop + 70, width - 24).addClef('percussion');
+    const system = Math.floor(bar / barsPerLine);
+    const col = bar % barsPerLine;
+    const cols = Math.min(barsPerLine, state.bars - system * barsPerLine);
+    const gap = 16;
+    const barWidth = Math.floor((width - 20 - gap * (cols - 1)) / cols);
+    const x = 10 + col * (barWidth + gap);
+    const y = system * systemHeight + 64;
+
+    const stave = new Stave(x, y, barWidth);
+    if (col === 0) stave.addClef('percussion');
+    stave.setBegBarType(col === 0 ? Barline.type.SINGLE : Barline.type.NONE);
+    stave.setEndBarType(Barline.type.SINGLE);
     stave.setContext(ctx).draw();
     const staffTop = stave.getYForLine(0);
     ctx.setFillStyle('#1b1b1a');
@@ -294,13 +429,15 @@ function mountSheet() {
       const group = [];
       for (let k = 0; k < size; k += 1) {
         const index = bar * state.notesPerBar + cursor + k;
-        const def = voiceById(handVoice(hands[index]));
+        const hand = hands[index];
+        const def = voiceById(hand === 'R' ? state.right : state.left);
         const note = new StaveNote({
           keys: [def.note || 'c/5'],
           duration: spec.duration,
           clef: 'percussion',
         });
         note.setStemDirection(-1);
+        if (spec.dots) Dot.buildAndAttach([note], { all: true });
         note.__index = index;
         group.push(note);
       }
@@ -317,7 +454,7 @@ function mountSheet() {
         location: -1,
       }))
       : [];
-    const beams = (spec.duration === '8' || spec.duration === '16')
+    const beams = (spec.duration === '8' || spec.duration === '16' || spec.duration === '32')
       ? groups.filter((g) => g.length > 1).map((g) => {
         const beam = new Beam(g);
         beam.renderOptions.flatBeams = true;
@@ -326,36 +463,37 @@ function mountSheet() {
       : [];
 
     const voices = [
-      new Voice({ numBeats: 4, beatValue: 4 }).setStrict(false).addTickables(all),
+      new Voice({ numBeats: barQuarters(), beatValue: 4 }).setStrict(false).addTickables(all),
     ];
 
-    let metroNotes = [];
     if (showMetronome) {
-      metroNotes = Array.from({ length: 4 }, () => {
-        const note = new StaveNote({ keys: [metroNote], duration: 'q', clef: 'percussion' });
+      const metroNote = voiceById(state.metroVoice).note;
+      const metroNotes = Array.from({ length: beats }, () => {
+        const note = new StaveNote({ keys: [metroNote], duration: metroDuration, clef: 'percussion' });
         note.setStemDirection(1);
+        if (beatNote === 1.5) Dot.buildAndAttach([note], { all: true });
         return note;
       });
-      voices.push(new Voice({ numBeats: 4, beatValue: 4 }).setStrict(false).addTickables(metroNotes));
+      voices.push(new Voice({ numBeats: barQuarters(), beatValue: 4 }).setStrict(false).addTickables(metroNotes));
     }
 
     const formatter = new Formatter();
     voices.forEach((v) => formatter.joinVoices([v]));
-    formatter.format(voices, width - 60);
+    formatter.format(voices, barWidth - (col === 0 ? 60 : 24));
     voices.forEach((v) => v.draw(ctx, stave));
     beams.forEach((beam) => beam.setContext(ctx).draw());
     tuplets.forEach((tuplet) => tuplet.setContext(ctx).draw());
 
-    ctx.setFont('Arial', 11, 700);
+    ctx.setFont('Arial', barWidth < 360 ? 9 : 11, 700);
     ctx.setFillStyle('#1b1b1a');
     for (const note of all) {
-      const x = note.getAbsoluteX();
-      ctx.fillText(hands[note.__index], x + 1, staffTop - 58);
-      noteMeta.push({ index: note.__index, x: x + 1, staffTop });
+      const nx = note.getAbsoluteX();
+      ctx.fillText(hands[note.__index], nx + 1, staffTop - 58);
+      noteMeta.push({ index: note.__index, x: nx + 1, staffTop });
     }
     ctx.setFont('Arial', 9, 400);
     ctx.setFillStyle('#8a867c');
-    ctx.fillText(`bar ${bar + 1}`, 14, staffTop - 8);
+    ctx.fillText(`${bar + 1}`, x + 4, staffTop - 8);
   }
 
   const cursorEl = document.createElement('div');
@@ -499,16 +637,39 @@ function hit(kind, time, sink) {
   }
 }
 
-function schedulePass(base) {
-  const hands = strokeHands();
-  for (let i = 0; i < hands.length; i += 1) {
-    hit(handVoice(hands[i]), base + i * session.stroke, session.sources);
-  }
-  if (state.metronome) {
-    for (let beat = 0; beat < state.bars * 4; beat += 1) {
-      hit(state.metroVoice, base + beat * session.beat, session.sources);
+function schedulePlan(base, plan, beat) {
+  const bpb = beatsPerBar();
+  const barDuration = bpb * beat;
+  const steps = [];
+  let time = base;
+
+  for (const step of plan) {
+    const stroke = barDuration / step.n;
+    const count = step.bars * step.n;
+    const pattern = stickingById(step.sticking).pattern;
+    for (let i = 0; i < count; i += 1) {
+      const hand = pattern[i % pattern.length];
+      hit(hand === 'R' ? step.right : step.left, time + i * stroke, session.sources);
     }
+    if (state.metronome) {
+      for (let b = 0; b < step.bars * bpb; b += 1) {
+        hit(state.metroVoice, time + b * beat, session.sources);
+      }
+    }
+    const duration = step.bars * barDuration;
+    steps.push({
+      key: step.key,
+      start: time - base,
+      end: time - base + duration,
+      n: step.n,
+      bars: step.bars,
+      count,
+      sticking: step.sticking,
+    });
+    time += duration;
   }
+
+  return { steps, duration: time - base };
 }
 
 function startSession() {
@@ -517,25 +678,24 @@ function startSession() {
   stopSession();
 
   const beat = 60 / state.bpm;
-  const stroke = (beat * 4) / state.notesPerBar;
-  const countInBeats = state.countIn ? 4 : 0;
+  const countInBeats = state.countIn ? beatsPerBar() : 0;
   const start = ctx.currentTime + 0.25 + countInBeats * beat;
 
-  session = {
-    start,
-    pass: 0,
-    duration: state.bars * 4 * beat,
-    beat,
-    stroke,
-    sources: [],
-    timer: 0,
-    raf: 0,
-  };
+  session = { sources: [], timer: 0, raf: 0, playingKey: null };
 
   for (let b = 0; b < countInBeats; b += 1) {
     hit('click', ctx.currentTime + 0.25 + b * beat, session.sources);
   }
-  schedulePass(start);
+
+  const plan = playPlan();
+  const scheduled = schedulePlan(start, plan, beat);
+  session.start = start;
+  session.pass = 0;
+  session.passDuration = scheduled.duration;
+  session.beat = beat;
+  session.steps = scheduled.steps;
+  session.single = plan.length === 1;
+
   if (state.loop) scheduleLoop();
   setPlayingUI();
   tick();
@@ -544,12 +704,13 @@ function startSession() {
 function scheduleLoop() {
   if (!session) return;
   const ctx = audio();
-  const boundary = session.start + (session.pass + 1) * session.duration;
+  const boundary = session.start + (session.pass + 1) * session.passDuration;
   const delay = Math.max(0, (boundary - ctx.currentTime - 0.05) * 1000);
   session.timer = setTimeout(() => {
     if (!session) return;
     session.pass += 1;
-    schedulePass(session.start + session.pass * session.duration);
+    const next = session.start + session.pass * session.passDuration;
+    schedulePlan(next, playPlan(), session.beat);
     if (state.loop) scheduleLoop();
   }, delay);
 }
@@ -558,28 +719,59 @@ function tick() {
   if (!session) return;
   const ctx = audio();
   const elapsed = ctx.currentTime - session.start;
-  const cursor = document.querySelector('.cursor');
   const status = document.querySelector('[data-status]');
 
   if (elapsed < 0) {
-    if (cursor) cursor.hidden = true;
-    if (status) status.textContent = `Count-in ${Math.min(4, Math.max(1, Math.ceil(-elapsed / session.beat - 0.001)))}`;
-  } else if (elapsed >= session.duration && !state.loop) {
+    hideCursor();
+    if (status) {
+      status.textContent = state.countIn
+        ? `Count-in ${Math.min(beatsPerBar(), Math.max(1, Math.ceil(-elapsed / session.beat - 0.001)))}`
+        : 'Starting';
+    }
+  } else if (elapsed >= session.passDuration && !state.loop) {
     stopSession();
     return;
   } else {
-    const inPass = elapsed % session.duration;
-    const index = Math.min(totalStrokes() - 1, Math.floor(inPass / session.stroke));
-    const meta = noteMeta.find((m) => m.index === index);
-    if (cursor && meta) {
-      cursor.hidden = false;
-      cursor.style.left = `${meta.x + 1}px`;
-      cursor.style.top = `${meta.staffTop - 30}px`;
-      cursor.style.height = '78px';
+    const inPass = elapsed % session.passDuration;
+    const step = session.steps.find((s) => inPass >= s.start && inPass < s.end) || session.steps[session.steps.length - 1];
+
+    if (step) {
+      highlightCell(step.key);
+      if (session.single) {
+        const stroke = (step.end - step.start) / step.count;
+        const index = Math.min(noteMeta.length - 1, Math.max(0, Math.floor((inPass - step.start) / stroke)));
+        const meta = noteMeta[index];
+        const cursor = document.querySelector('.cursor');
+        if (cursor && meta) {
+          cursor.hidden = false;
+          cursor.style.left = `${meta.x + 1}px`;
+          cursor.style.top = `${meta.staffTop - 30}px`;
+          cursor.style.height = '78px';
+        }
+        if (status) status.textContent = `Stroke ${index + 1} of ${noteMeta.length}`;
+      } else {
+        hideCursor();
+        const i = session.steps.indexOf(step) + 1;
+        if (status) {
+          status.textContent = `Step ${i} of ${session.steps.length} · ${step.n} notes/bar · ${stickingById(step.sticking).label}`;
+        }
+      }
     }
-    if (status) status.textContent = `Stroke ${index + 1} of ${totalStrokes()}`;
   }
   session.raf = requestAnimationFrame(tick);
+}
+
+function highlightCell(key) {
+  if (!session || session.playingKey === key) return;
+  session.playingKey = key;
+  document.querySelectorAll('.cell.playing').forEach((el) => el.classList.remove('playing'));
+  const el = document.querySelector(`[data-key="${key}"]`);
+  if (el) el.classList.add('playing');
+}
+
+function hideCursor() {
+  const cursor = document.querySelector('.cursor');
+  if (cursor) cursor.hidden = true;
 }
 
 function stopSession() {
@@ -597,8 +789,8 @@ function stopSession() {
     }
   });
   session = null;
-  const cursor = document.querySelector('.cursor');
-  if (cursor) cursor.hidden = true;
+  hideCursor();
+  document.querySelectorAll('.cell.playing').forEach((el) => el.classList.remove('playing'));
   const status = document.querySelector('[data-status]');
   if (status) status.textContent = '';
   setPlayingUI();
@@ -610,44 +802,97 @@ function setPlayingUI() {
 }
 
 // ---------------------------------------------------------------------------
+// Selection.
+// ---------------------------------------------------------------------------
+
+function refreshSelection() {
+  document.querySelectorAll('.cell[data-key]').forEach((el) => {
+    const index = state.selection.indexOf(el.dataset.key);
+    el.classList.toggle('selected', index >= 0);
+    const num = el.querySelector('.num');
+    if (num) num.textContent = index >= 0 ? index + 1 : '';
+  });
+  const info = document.querySelector('[data-order]');
+  if (info) {
+    info.textContent = state.selection.length
+      ? `${state.selection.length} ${state.selection.length === 1 ? 'cell' : 'cells'} in play order`
+      : 'playing this cell';
+  }
+}
+
+function applySelect(key, mode) {
+  const index = state.selection.indexOf(key);
+  if (mode === 'add' && index < 0) state.selection.push(key);
+  else if (mode === 'remove' && index >= 0) state.selection.splice(index, 1);
+  refreshSelection();
+}
+
+let drag = null;
+
+document.addEventListener('mousedown', (event) => {
+  const cell = event.target.closest('[data-key]');
+  if (!cell || !event.shiftKey) return;
+  event.preventDefault();
+  const key = cell.dataset.key;
+  drag = { mode: state.selection.includes(key) ? 'remove' : 'add' };
+  applySelect(key, drag.mode);
+});
+
+document.addEventListener('mouseover', (event) => {
+  if (!drag) return;
+  const cell = event.target.closest('[data-key]');
+  if (!cell) return;
+  applySelect(cell.dataset.key, drag.mode);
+});
+
+document.addEventListener('mouseup', () => {
+  drag = null;
+});
+
+document.addEventListener('contextmenu', (event) => {
+  const cell = event.target.closest('[data-key]');
+  if (!cell) return;
+  event.preventDefault();
+  state.editing = cell.dataset.key;
+  render();
+});
+
+// ---------------------------------------------------------------------------
 // Interaction.
 // ---------------------------------------------------------------------------
 
-function setCombo(patch) {
-  Object.assign(state, patch);
-  render();
-}
-
 document.addEventListener('click', (event) => {
-  const el = event.target.closest('[data-act]');
+  const el = event.target.closest('[data-act], [data-key]');
   if (!el) return;
+  if (event.shiftKey) return;
   const act = el.dataset.act;
 
-  if (act === 'combo') {
-    setCombo({
-      sticking: el.dataset.sticking,
-      notesPerBar: Number(el.dataset.column),
-    });
-  } else if (act === 'column') {
-    setCombo({ notesPerBar: Number(el.dataset.value) });
-  } else if (act === 'sticking') {
-    setCombo({ sticking: el.dataset.value });
-  } else if (act === 'toggle-column') {
+  if (el.dataset.key && !act) {
+    setCombo({ sticking: el.dataset.sticking, notesPerBar: Number(el.dataset.column) });
+    return;
+  }
+
+  if (act === 'column') setCombo({ notesPerBar: Number(el.dataset.value) });
+  else if (act === 'sticking') setCombo({ sticking: el.dataset.value });
+  else if (act === 'toggle-rate') {
     const n = Number(el.dataset.value);
-    const has = state.columns.includes(n);
-    const next = has ? state.columns.filter((c) => c !== n) : [...state.columns, n].sort((a, b) => a - b);
+    const has = state.rates.includes(n);
+    const next = has ? state.rates.filter((r) => r !== n) : [...state.rates, n].sort((a, b) => a - b);
     if (!next.length) return;
-    setCombo({
-      columns: next,
-      notesPerBar: next.includes(state.notesPerBar) ? state.notesPerBar : next[0],
-    });
-  } else if (act === 'common-columns') {
-    setCombo({ columns: COMMON_COLUMNS.slice(), notesPerBar: 12 });
-  } else if (act === 'all-columns') {
-    setCombo({ columns: COLUMNS.slice() });
+    setCombo({ rates: next, notesPerBar: next.includes(state.notesPerBar) ? state.notesPerBar : next[0] });
+  } else if (act === 'common-rates') {
+    setCombo({ rates: COMMON_RATES.slice(), notesPerBar: 12 });
+  } else if (act === 'all-rates') {
+    setCombo({ rates: RATES.slice() });
   } else if (act === 'play') {
     if (session) stopSession();
     else startSession();
+  } else if (act === 'close-editor') {
+    state.editing = null;
+    render();
+  } else if (act === 'clear-overrides') {
+    delete state.overrides[el.dataset.key];
+    render();
   }
 });
 
@@ -656,11 +901,10 @@ document.addEventListener('change', (event) => {
   if (!el) return;
   const act = el.dataset.act;
 
-  if (act === 'voice') {
-    setCombo({ [el.dataset.which]: el.value });
-  } else if (act === 'bars') {
-    setCombo({ bars: Math.min(16, Math.max(1, Number(el.value) || 1)) });
-  } else if (act === 'metronome') {
+  if (act === 'voice') setCombo({ [el.dataset.which]: el.value });
+  else if (act === 'bars') setCombo({ bars: Math.min(16, Math.max(1, Number(el.value) || 1)) });
+  else if (act === 'sig') setCombo({ sig: el.value });
+  else if (act === 'metronome') {
     state.metronome = el.checked;
     render();
   } else if (act === 'loop') {
@@ -671,6 +915,16 @@ document.addEventListener('change', (event) => {
     }
   } else if (act === 'countin') {
     state.countIn = el.checked;
+  } else if (act === 'override') {
+    const key = el.dataset.key;
+    const field = el.dataset.field;
+    const value = el.value;
+    const over = { ...(state.overrides[key] || {}) };
+    if (value === 'inherit') delete over[field];
+    else over[field] = field === 'bars' ? Number(value) : value;
+    if (Object.keys(over).length) state.overrides[key] = over;
+    else delete state.overrides[key];
+    render();
   }
 });
 
@@ -684,6 +938,12 @@ document.addEventListener('input', (event) => {
   }
 });
 
+function setCombo(patch) {
+  stopSession();
+  Object.assign(state, patch);
+  render();
+}
+
 // URL overrides so a combination is a link.
 const params = new URLSearchParams(window.location.search);
 const pickValue = (key, allowed) => {
@@ -695,7 +955,8 @@ const pickNumber = (key, allowed) => {
   return allowed.includes(value) ? value : null;
 };
 
-state.notesPerBar = pickNumber('n', COLUMNS) || state.notesPerBar;
+state.sig = pickValue('sig', SIGNATURES.map((s) => s.id)) || state.sig;
+state.notesPerBar = pickNumber('n', RATES) || state.notesPerBar;
 state.sticking = pickValue('s', STICKINGS.map((s) => s.id)) || state.sticking;
 state.bars = Math.min(16, Math.max(1, Number(params.get('bars')) || state.bars));
 state.bpm = Math.min(200, Math.max(30, Number(params.get('bpm')) || state.bpm));
@@ -703,10 +964,14 @@ state.metronome = params.get('m') !== '0';
 state.metroVoice = pickValue('mv', VOICES.map((v) => v.id)) || state.metroVoice;
 state.right = pickValue('r', VOICES.map((v) => v.id)) || state.right;
 state.left = pickValue('l', VOICES.map((v) => v.id)) || state.left;
-const cols = (params.get('cols') || '')
+const rates = (params.get('rates') || '')
   .split(',')
   .map(Number)
-  .filter((n) => COLUMNS.includes(n));
-if (cols.length) state.columns = cols;
+  .filter((n) => RATES.includes(n));
+if (rates.length) state.rates = rates;
+const selection = (params.get('sel') || '')
+  .split(',')
+  .filter(Boolean);
+if (selection.length) state.selection = selection;
 
 render();

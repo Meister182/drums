@@ -57,3 +57,19 @@ with a notes-per-click axis and an alignment helper is dropped.
 Worked example: 12 notes per bar on the 8th-triplet column, doubles on snare
 over bass drum, two bars, 80 BPM, metronome on the ride. 24 strokes, sticking
 tiled from the first stroke, ride clicking every quarter.
+
+## Revision 2026-11-18, later the same day
+
+- **Time signature** becomes selectable: 2/4, 3/4, 4/4, 6/8, 12/8, default 4/4.
+  A bar is `num * 4 / den` quarter notes long.
+- **BPM counts the metronome beat**: the quarter in x/4, the dotted quarter in
+  6/8 and 12/8. The metronome clicks once per beat.
+- **Notation** derives from the bar length: exact note values, dotted values
+  where they land (one note in 3/4 is a dotted half, for example), and a tuplet
+  over the bar otherwise. In 4/4 the triplet counts 3, 6 and 12 stay grouped in
+  threes.
+- **Sheets** lay out up to four bars per line, fewer when the rate needs the
+  room so notes never collide.
+- **Ordered play** returns as a prototype, not a decision: shift-click cells to
+  build a play order, numbered in click order, with per-cell overrides for bars
+  and R/L instruments. See ticket 05.

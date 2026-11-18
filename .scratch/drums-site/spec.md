@@ -7,35 +7,38 @@ feature: drums-site
 ## Destination
 
 A build-ready spec for a free, static drums-exercise site: a table of notes per
-bar by sticking, the sheet and playback for the selected combination, metronome
-and instrument assignment, and a published link the teacher can share. Charting
-ends with the spec; building it is the second phase.
+bar by sticking, the sheet and playback for the selected combination or the
+selected order, metronome and instrument assignment, and a published link the
+teacher can share. Charting ends with the spec; building it is the second phase.
 
 ## Notes
 
 Domain: a drums teacher picks a rate (notes per bar) and a sticking, assigns
-instruments to the R and L strokes, sets the bar count and tempo, and plays it.
-Students open a link and practise.
+instruments to the R and L strokes, sets the bar count, time signature and
+tempo, and plays it. Students open a link and practise.
 
-Settled after the pivot (2026-11-17):
+Settled as of 2026-11-18:
 
-- 4/4 only. A bar is four quarter-note beats.
-- Columns are notes per bar, every integer from 1 to 16. Standard note values
-  get their name (whole, half, half triplet, quarter, quarter triplet, eighth,
-  eighth triplet, sixteenth); the rest are tuplets over the bar.
-- Columns can be switched on and off, so the table only shows what the current
-  exercise needs.
+- Table first, settings under it, sheet at the bottom. The sheet header holds
+  bars, time signature, tempo and Play.
+- Columns are rates, every integer from 1 to 16 notes per bar, switchable on
+  and off. Standard values get a name (whole, half, dotted, quarter, eighth,
+  sixteenth); the rest are tuplets over the bar.
 - Rows are stickings: singles, doubles, single paradiddle, double paradiddle,
   paradiddle-diddle. Custom rows are not decided.
-- Bar count is configurable. No alignment helper, no leftover math.
-- Tempo is BPM, counting quarter notes.
-- The metronome is a checkbox and plays the quarter notes, independent of the
-  sticking, on its own instrument, even when a stroke uses the same instrument.
-- Two sound layers: the R strokes and the L strokes each get an instrument, and
-  the metronome gets its own. That covers hand and foot voicings, for example R
-  on bass drum, L on snare, metronome on the ride.
-- Dropped in the pivot: sequence playback, paths, the align helper, student
-  mode, layout variants, the old clicks-per-bar and notes-per-click axes.
+- Time signature is selectable: 2/4, 3/4, 4/4, 6/8, 12/8, default 4/4. Tempo is
+  BPM counting the metronome beat, which is the quarter in x/4 and the dotted
+  quarter in 6/8 and 12/8.
+- Sheets lay out up to four bars per line, fewer when the rate needs the room.
+- The metronome is an independent layer on the beats, with its own instrument,
+  even when a stroke uses the same instrument.
+- R strokes and L strokes each get an instrument; feet are just instruments.
+- Shift-click and shift-drag build a play order across cells, numbered in
+  click order. Right-click gives a cell its own bars or R/L instruments.
+- No alignment helper, no leftover math.
+
+Dropped in the pivot: the old clicks-per-bar and notes-per-click axes, student
+mode, layout variants, and paths.
 
 Skills: `grilling`, `domain-modeling`, `prototype`, `research`.
 
@@ -51,23 +54,26 @@ Skills: `grilling`, `domain-modeling`, `prototype`, `research`.
   live at <https://meister182.github.io/drums/> from `Meister182/drums`,
   legacy Pages on `main`, push to redeploy.
 - [Settle the rhythm model](issues/01-settle-rhythm-model.md):
-  notes per bar as the single rate axis, 4/4, configurable bars, BPM in quarter
-  notes, independent quarter-note metronome, R and L stroke instruments.
+  rates as the single axis, selectable time signature, configurable bars, BPM
+  in beats, independent metronome, R and L stroke instruments.
 
 ## Not yet specified
 
-- Custom stickings and how rows are added; the teacher is unsure and mentioned
-  hand-foot coordination.
+- Custom stickings and how rows are added; hand-foot coordination was mentioned.
 - Whether feet get their own layer or stay as instruments in the R/L list.
-- Whether the metronome rate is configurable beyond the quarter notes.
-- Phone layout details and keeping the screen awake while practising.
-- How an exercise or a set of them is saved and shared: links, files, both.
+- Whether the metronome rate is configurable beyond the beat.
+- Phone layout: two bars per line at narrow widths needs a smaller notation
+  scale, so it currently drops to one.
+- How exercises and play orders are saved and shared: links, files, both.
+- Whether a cell's overrides are a keeper, and whether they extend to rates and
+  stickings.
 - Print layout details beyond PDF export.
 
 ## Out of scope
 
-- Sequence playback, auto-advance and paths. Closed ticket:
-  [Design sequence playback](issues/06-sequence-playback.md).
 - The align helper and leftover-cycle badges. Dropped from the model.
 - Student mode, and layout variants B and C.
 - Accounts, a teacher dashboard, native apps, backing tracks.
+- The earlier auto-advance and path design from
+  [Design sequence playback](issues/06-sequence-playback.md). Ordered play of
+  selected cells replaces it and is being prototyped in ticket 05.

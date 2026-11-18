@@ -5,19 +5,25 @@ table they are picked from, and how each one sounds.
 
 ## Language
 
+**Time signature**:
+The metre of an exercise: 2/4, 3/4, 4/4, 6/8 or 12/8, defaulting to 4/4.
+_Avoid_: metre, feel
+
 **Beat**:
-A quarter note in 4/4. Four beats to a bar.
+The unit the time signature counts and the metronome clicks. The quarter in
+x/4, the dotted quarter in 6/8 and 12/8.
 _Avoid_: pulse, click, count
 
 **Bar**:
-Four beats in 4/4. An exercise runs for a chosen number of bars.
+The number of beats the time signature names, for example four beats in 4/4.
+An exercise runs for a chosen number of bars.
 _Avoid_: measure
 
-**Notes per bar**:
-The rate of an exercise: how many evenly spaced strokes fill one bar, from 1 to
-16. Each count has a written note value, with tuplets for the counts that are
-not standard values.
-_Avoid_: subdivision, group size, notes per click, rate
+**Rate**:
+A notes-per-bar count on the table, from 1 to 16. Each rate has a written note
+value, or a tuplet when the count is not a standard value. Rates can be switched
+on and off, so the table shows only the ones an exercise needs.
+_Avoid_: column, subdivision, group size, notes per click
 
 **Sticking**:
 The hand pattern a run of strokes follows: singles, doubles, single paradiddle,
@@ -41,14 +47,18 @@ the same instant.
 _Avoid_: check, click track, pulse
 
 **Combination**:
-One choice of notes per bar, sticking, bars, tempo, metronome, and instruments.
+One choice of rate, sticking, bars, tempo, metronome, and instruments.
 _Avoid_: exercise, variation, setting
+
+**Play order**:
+The numbered list of cells chosen with shift-click, played in that order.
+_Avoid_: sequence, queue, setlist
+
+**Override**:
+Values a single cell carries for itself, currently its bars and its R and L
+instruments, instead of the shared settings.
+_Avoid_: exception, custom cell
 
 **Tiling**:
 Continuing the sticking from one bar into the next without restarting it.
 _Avoid_: looping, carrying over
-
-**Column**:
-One notes-per-bar count on the table. Columns can be switched on and off for
-the exercise at hand.
-_Avoid_: rate, division
