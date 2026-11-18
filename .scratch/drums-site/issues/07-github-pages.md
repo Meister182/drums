@@ -13,7 +13,7 @@ Nothing to decide here; the decision is blocked until a link exists.
 
 Create the public repo for this project, point it at this local checkout, add a
 deploy workflow that publishes the built site to GitHub Pages, and confirm
-`https://<user>.github.io/drums-page/` serves it. The existing CV site at
+`https://<user>.github.io/drums/` serves it. The existing CV site at
 `https://<user>.github.io/` must keep working, and this project must use the
 project-site path.
 
@@ -25,8 +25,8 @@ redeploy, and anything the teacher must do by hand.
 
 Done, agent-driven. Account `Meister182`, `gh` already authenticated.
 
-- Repo: <https://github.com/Meister182/drums-page> (public)
-- Published: <https://meister182.github.io/drums-page/> (HTTP 200, serves
+- Repo: <https://github.com/Meister182/drums> (public)
+- Published: <https://meister182.github.io/drums/> (HTTP 200, serves
   `index.html`)
 - CV site: <https://meister182.github.io/> still returns 200, unaffected
 - Local: branch `main` tracks `origin/main`; `origin` points at the new repo
@@ -36,6 +36,9 @@ Done, agent-driven. Account `Meister182`, `gh` already authenticated.
 Placeholder `index.html` at the repo root is what is served now; the real app
 replaces it. When the app gains a build step, switch Pages to a GitHub Actions
 workflow; no other hosting change is needed.
+
+Renamed from `drums-page` to `drums` on 2026-11-18 for a shorter URL. The old
+repo and Pages URLs redirect to the new ones.
 
 Nothing left for the teacher to do by hand. Sample credit line still has to
 appear on the site, tracked in the build spec.

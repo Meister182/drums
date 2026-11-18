@@ -22,7 +22,7 @@ links the prototype.
 
 ## Prototype
 
-Live at <https://meister182.github.io/drums-page/prototype/>, source in
+Live at <https://meister182.github.io/drums/prototype/>, source in
 `prototype/`. Throwaway code: no tests, no persistence, audio is synthesized
 stand-ins, notation uses VexFlow 5 with a hand-drawn sticking row.
 

@@ -48,7 +48,7 @@ Skills: `grilling`, `domain-modeling`, `prototype`, `research`.
   MuldjordKit FreePats edition (CC BY 4.0, 2.5 MB shipped), synthesized click,
   lookahead scheduler; credit "Drum samples provided by DrumGizmo.org."
 - [Stand up GitHub Pages hosting](issues/07-github-pages.md):
-  live at <https://meister182.github.io/drums-page/> from `Meister182/drums-page`,
+  live at <https://meister182.github.io/drums/> from `Meister182/drums`,
   legacy Pages on `main`, push to redeploy.
 - [Settle the rhythm model](issues/01-settle-rhythm-model.md):
   notes per bar as the single rate axis, 4/4, configurable bars, BPM in quarter
