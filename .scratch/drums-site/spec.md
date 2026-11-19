@@ -87,6 +87,13 @@ Skills: `grilling`, `domain-modeling`, `prototype`, `research`.
 - [Decide the exercise data model](issues/02-data-model.md):
   one Setup object, saved in `localStorage` under `drums.setups.v1`, shared as
   URL parameters; custom stickings and file export out of v1.
+- [Write the build spec](issues/08-build-spec.md):
+  Vite, TypeScript, VexFlow 5, Web Audio with real MuldjordKit samples, a saved
+  library and share links, deployed by Actions to Pages.
+
+## Status
+
+The map is charted. The build is phase two and proceeds from the build spec.
 
 ## Not yet specified
 
