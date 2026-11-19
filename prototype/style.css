@@ -441,9 +441,26 @@ table.grid th.corner {
   }
 }
 
+@page {
+  size: A4 portrait;
+  margin: 12mm;
+}
+
 @media print {
   body {
     background: #fff;
+  }
+
+  html,
+  body {
+    width: 186mm;
+    margin: 0;
+  }
+
+  #app,
+  .practice {
+    display: block;
+    width: 186mm;
   }
 
   .banner,
@@ -483,7 +500,17 @@ table.grid th.corner {
   }
 
   .sheet svg {
-    width: 100% !important;
+    display: block;
+    width: 186mm !important;
     height: auto !important;
+  }
+
+  .sheet,
+  .system {
+    width: 186mm;
+  }
+
+  .system {
+    break-inside: avoid;
   }
 }

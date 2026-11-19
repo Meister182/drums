@@ -27,40 +27,41 @@ Live at <https://meister182.github.io/drums/prototype/>, source in `prototype/`.
 Throwaway code: no tests, no persistence, audio is synthesized stand-ins,
 notation uses VexFlow 5 with a hand-drawn sticking row.
 
-Fourth revision after the 2026-11-19 feedback:
+Fifth revision after the 2026-11-19 feedback:
 
-- Hints at the top, then the config bar (bars, sig, tempo, metronome, R and L,
-  loop, count-in, Play), then the grid, then the score.
-- No dedicated notes-per-bar selector and no per-cell configs. Clicking a column
-  title shows or hides that count; hidden counts are greyed and their cells are
-  disabled. Hiding a count removes its cells from the play order.
-- The grid always keeps all 16 counts in place, so nothing jumps around.
-- The time signature is printed at the start of each line.
-- Clicking a cell no longer moves the page.
-- The sheet box is taller, 72vh.
-- Copy link puts the whole setup in the URL, and the address bar follows the
-  state. PDF opens the browser print dialog with a print stylesheet that hides
-  the chrome and scales the score to the page.
-- The score renders the whole play order, with connected bars, up to four per
-  line as width allows, and playback highlights the current cell and note.
+- Column titles toggle their notes-per-bar count; hidden counts are greyed and
+  their cells disabled. Hiding a count removes its cells from the play order.
+- No per-cell configs. Hints, then the config bar, then the grid, then the score.
+- Four bars per line on a wide screen, two at medium widths, one on a phone.
+  Dense rates scale the notation down instead of dropping to two bars per line.
+- Triplets that cannot be beamed, such as half and quarter triplets, now get a
+  bracket, so the group reads as connected.
+- Sticking letters are kept clear of the barlines even at 16 notes per bar.
+- The time signature prints at the start of each line.
+- Sheet box is taller, 72vh.
+- Each system is its own SVG block, which fixes the mostly blank first PDF page
+  and lets systems break across pages. Print is A4, at 186mm wide.
+- PDF still uses the browser print dialog, so saving is the dialog's Save as
+  PDF. A one-click download would need a PDF library and is a separate decision.
+- Copy link puts the whole setup in the URL and the address bar follows it.
 
 Reach the teacher's drill with
 `?n=12&s=singles&bars=2&m=1&mv=ride&r=snare&l=kick`.
 A three-cell score: `&sel=singles%7C4,doubles%7C6,singles%7C8`.
 
-Known prototype limits: tempo changes take effect on the next pass, a phone
-drops to one bar per line at high rates, print has no page-size control beyond
-the browser dialog, and the click sound is synthesized.
+Known prototype limits: tempo changes take effect on the next pass, print has no
+page-size choice beyond A4, the click sound is synthesized, and the score stays
+on screen while an order plays.
 
 ### What to react to
 
-1. Are the hints in the right place, above the configs?
-2. Is selecting the current cell only by clicking a cell or a row title enough,
-   now that column titles only show and hide?
-3. Does the sheet box height work at 72vh?
-4. Does PDF produce something usable, and is Copy link doing what you expect?
-5. Four bars per line when it fits, three or two for dense rates: still fine?
-6. What is missing before you would use this in a lesson?
+1. Is four bars per line at 16 notes per bar readable enough on your screen, or
+   did the scaling go too far?
+2. Do the triplet brackets read right now?
+3. Is the PDF usable, and is the print dialog acceptable or do you want a real
+   one-click download?
+4. Is the copy link doing what you expect?
+5. What is missing before you would use this in a lesson?
 
 The resolution is the teacher's verdict per question, then the choices are
 folded into the build spec and the prototype comes off `main`.

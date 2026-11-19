@@ -347,120 +347,146 @@ function mountSheet() {
   const width = Math.max(300, Math.floor(host.getBoundingClientRect().width - 8));
   const bars = planBars();
   const maxN = Math.max(...bars.map((b) => b.step.n));
-  const minBarWidth = 24 * maxN + 70;
-  const barsPerLine = Math.max(1, Math.min(4, Math.floor((width - 20) / minBarWidth)));
+  const barsPerLine = width >= 900 ? 4 : width >= 560 ? 2 : 1;
+  const minBarWidth = 26 * maxN + 84;
+  const logicalWidth = Math.max(width, barsPerLine * minBarWidth + 20);
+  const scale = width / logicalWidth;
   const systems = Math.max(1, Math.ceil(bars.length / barsPerLine));
   const systemHeight = 186;
-  const height = systems * systemHeight + 34;
-
-  const renderer = new Renderer(host, Renderer.Backends.SVG);
-  renderer.resize(width, height);
-  const ctx = renderer.getContext();
 
   let noteIndex = 0;
 
-  for (let i = 0; i < bars.length; i += 1) {
-    const system = Math.floor(i / barsPerLine);
-    const col = i % barsPerLine;
-    const cols = Math.min(barsPerLine, bars.length - system * barsPerLine);
-    const barWidth = (width - 20) / cols;
-    const x = 10 + col * barWidth;
-    const y = system * systemHeight + 64;
-    const { step } = bars[i];
+  for (let system = 0; system < systems; system += 1) {
+    const wrap = document.createElement('div');
+    wrap.className = 'system';
+    wrap.style.height = `${systemHeight * scale}px`;
+    host.appendChild(wrap);
 
-    const spec = grouping(step.n);
-    const stave = new Stave(x, y, barWidth);
-    if (col === 0) {
-      stave.addClef('percussion');
-      stave.addTimeSignature(state.sig);
-    }
-    stave.setBegBarType(col === 0 ? Barline.type.SINGLE : Barline.type.NONE);
-    stave.setEndBarType(Barline.type.SINGLE);
-    stave.setContext(ctx).draw();
-    const staffTop = stave.getYForLine(0);
-    ctx.setFillStyle('#1b1b1a');
+    const renderer = new Renderer(wrap, Renderer.Backends.SVG);
+    renderer.resize(logicalWidth, systemHeight);
+    const ctx = renderer.getContext();
 
-    const hands = strokeHands(step.sticking, step.n);
-    const barStart = noteIndex;
-    const groups = [];
-    let cursor = 0;
-    while (cursor < step.n) {
-      const size = Math.min(spec.group, step.n - cursor);
-      const group = [];
-      for (let k = 0; k < size; k += 1) {
-        const hand = hands[cursor + k];
-        const def = voiceById(hand === 'R' ? step.right : step.left);
-        const note = new StaveNote({
-          keys: [def.note || 'c/5'],
-          duration: spec.duration,
-          clef: 'percussion',
-        });
-        note.setStemDirection(-1);
-        if (spec.dots) Dot.buildAndAttach([note], { all: true });
-        note.__index = noteIndex;
-        group.push(note);
-        noteIndex += 1;
+    const start = system * barsPerLine;
+    const count = Math.min(barsPerLine, bars.length - start);
+    const barWidth = (logicalWidth - 20) / count;
+
+    for (let col = 0; col < count; col += 1) {
+      const i = start + col;
+      const { step } = bars[i];
+      const x = 10 + col * barWidth;
+      const y = 64;
+
+      const spec = grouping(step.n);
+      const stave = new Stave(x, y, barWidth);
+      if (col === 0) {
+        stave.addClef('percussion');
+        stave.addTimeSignature(state.sig);
       }
-      groups.push(group);
-      cursor += size;
+      stave.setBegBarType(col === 0 ? Barline.type.SINGLE : Barline.type.NONE);
+      stave.setEndBarType(Barline.type.SINGLE);
+      stave.setContext(ctx).draw();
+      const staffTop = stave.getYForLine(0);
+      ctx.setFillStyle('#1b1b1a');
+
+      const hands = strokeHands(step.sticking, step.n);
+      const barStart = noteIndex;
+      const groups = [];
+      let cursor = 0;
+      while (cursor < step.n) {
+        const size = Math.min(spec.group, step.n - cursor);
+        const group = [];
+        for (let k = 0; k < size; k += 1) {
+          const hand = hands[cursor + k];
+          const def = voiceById(hand === 'R' ? step.right : step.left);
+          const note = new StaveNote({
+            keys: [def.note || 'c/5'],
+            duration: spec.duration,
+            clef: 'percussion',
+          });
+          note.setStemDirection(-1);
+          if (spec.dots) Dot.buildAndAttach([note], { all: true });
+          note.__index = noteIndex;
+          group.push(note);
+          noteIndex += 1;
+        }
+        groups.push(group);
+        cursor += size;
+      }
+
+      const all = groups.flat();
+      const beamed = spec.duration === '8' || spec.duration === '16' || spec.duration === '32';
+      const tuplets = spec.ratio
+        ? groups.map((g) => new Tuplet(g, {
+          numNotes: spec.ratio[0],
+          notesOccupied: spec.ratio[1],
+          bracketed: !beamed,
+          location: -1,
+        }))
+        : [];
+      const beams = beamed
+        ? groups.filter((g) => g.length > 1).map((g) => {
+          const beam = new Beam(g);
+          beam.renderOptions.flatBeams = true;
+          return beam;
+        })
+        : [];
+
+      const voices = [
+        new Voice({ numBeats: barQuarters(), beatValue: 4 }).setStrict(false).addTickables(all),
+      ];
+
+      const metroNote = step.metronome && voiceById(step.metroVoice).note
+        ? voiceById(step.metroVoice).note
+        : null;
+      if (metroNote) {
+        const metroNotes = Array.from({ length: beatsPerBar() }, () => {
+          const note = new StaveNote({ keys: [metroNote], duration: 'q', clef: 'percussion' });
+          note.setStemDirection(1);
+          if (compound()) Dot.buildAndAttach([note], { all: true });
+          return note;
+        });
+        voices.push(new Voice({ numBeats: barQuarters(), beatValue: 4 }).setStrict(false).addTickables(metroNotes));
+      }
+
+      const noteArea = stave.getNoteEndX() - stave.getNoteStartX() - 16;
+      const formatter = new Formatter();
+      voices.forEach((v) => formatter.joinVoices([v]));
+      formatter.format(voices, noteArea);
+      voices.forEach((v) => v.draw(ctx, stave));
+      beams.forEach((beam) => beam.setContext(ctx).draw());
+      tuplets.forEach((tuplet) => tuplet.setContext(ctx).draw());
+
+      ctx.setFont('Arial', barWidth < 360 ? 9 : 11, 700);
+      ctx.setFillStyle('#1b1b1a');
+      for (const note of all) {
+        const nx = note.getAbsoluteX();
+        const letterX = Math.min(Math.max(nx + 1, x + 14), x + barWidth - 14);
+        ctx.fillText(hands[note.__index - barStart], letterX, staffTop - 58);
+        noteMeta.push({
+          index: note.__index,
+          x: (nx + 1) * scale,
+          top: (system * systemHeight + staffTop - 30) * scale,
+          height: 78 * scale,
+        });
+      }
+      ctx.setFont('Arial', 9, 400);
+      ctx.setFillStyle('#8a867c');
+      ctx.fillText(`${i + 1}`, x + 4, staffTop - 8);
     }
 
-    const all = groups.flat();
-    const tuplets = spec.ratio
-      ? groups.map((g) => new Tuplet(g, {
-        numNotes: spec.ratio[0],
-        notesOccupied: spec.ratio[1],
-        bracketed: false,
-        location: -1,
-      }))
-      : [];
-    const beams = (spec.duration === '8' || spec.duration === '16' || spec.duration === '32')
-      ? groups.filter((g) => g.length > 1).map((g) => {
-        const beam = new Beam(g);
-        beam.renderOptions.flatBeams = true;
-        return beam;
-      })
-      : [];
-
-    const voices = [
-      new Voice({ numBeats: barQuarters(), beatValue: 4 }).setStrict(false).addTickables(all),
-    ];
-
-    const metroNote = step.metronome && voiceById(step.metroVoice).note
-      ? voiceById(step.metroVoice).note
-      : null;
-    if (metroNote) {
-      const metroNotes = Array.from({ length: beatsPerBar() }, () => {
-        const note = new StaveNote({ keys: [metroNote], duration: 'q', clef: 'percussion' });
-        note.setStemDirection(1);
-        if (compound()) Dot.buildAndAttach([note], { all: true });
-        return note;
-      });
-      voices.push(new Voice({ numBeats: barQuarters(), beatValue: 4 }).setStrict(false).addTickables(metroNotes));
+    const svg = wrap.querySelector('svg');
+    if (svg) {
+      svg.setAttribute('viewBox', `0 0 ${logicalWidth} ${systemHeight}`);
+      svg.setAttribute('width', '100%');
+      svg.setAttribute('height', `${systemHeight * scale}`);
+      svg.style.width = '100%';
+      svg.style.height = 'auto';
     }
-
-    const noteArea = stave.getNoteEndX() - stave.getNoteStartX() - 12;
-    const formatter = new Formatter();
-    voices.forEach((v) => formatter.joinVoices([v]));
-    formatter.format(voices, noteArea);
-    voices.forEach((v) => v.draw(ctx, stave));
-    beams.forEach((beam) => beam.setContext(ctx).draw());
-    tuplets.forEach((tuplet) => tuplet.setContext(ctx).draw());
-
-    ctx.setFont('Arial', barWidth < 360 ? 9 : 11, 700);
-    ctx.setFillStyle('#1b1b1a');
-    for (const note of all) {
-      const nx = note.getAbsoluteX();
-      ctx.fillText(hands[note.__index - barStart], nx + 1, staffTop - 58);
-      noteMeta.push({ index: note.__index, x: nx + 1, staffTop });
-    }
-    ctx.setFont('Arial', 9, 400);
-    ctx.setFillStyle('#8a867c');
-    ctx.fillText(`${i + 1}`, x + 4, staffTop - 8);
+    wrap.removeAttribute('style');
+    wrap.style.height = `${systemHeight * scale}px`;
   }
 
-  const svg = host.querySelector('svg');
-  if (svg) svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+  host.removeAttribute('style');
 
   const cursorEl = document.createElement('div');
   cursorEl.className = 'cursor';
@@ -730,16 +756,16 @@ function showCursor(meta) {
   const cursor = document.querySelector('.cursor');
   if (!cursor) return;
   cursor.hidden = false;
-  cursor.style.left = `${meta.x + 1}px`;
-  cursor.style.top = `${meta.staffTop - 30}px`;
-  cursor.style.height = '78px';
+  cursor.style.left = `${meta.x}px`;
+  cursor.style.top = `${meta.top}px`;
+  cursor.style.height = `${meta.height}px`;
 }
 
 function scrollCursorIntoView(meta) {
   const box = document.querySelector('[data-sheet]');
   if (!box || box.scrollHeight <= box.clientHeight + 4) return;
-  if (meta.staffTop < box.scrollTop + 50 || meta.staffTop > box.scrollTop + box.clientHeight - 60) {
-    box.scrollTo({ top: Math.max(0, meta.staffTop - box.clientHeight / 2), behavior: 'smooth' });
+  if (meta.top < box.scrollTop + 50 || meta.top > box.scrollTop + box.clientHeight - 60) {
+    box.scrollTo({ top: Math.max(0, meta.top - box.clientHeight / 2), behavior: 'smooth' });
   }
 }
 
@@ -913,6 +939,21 @@ async function copyLink(button) {
     window.prompt('Copy this link', url);
   }
 }
+
+// Print at a fixed page width so the score scales predictably.
+window.addEventListener('beforeprint', () => {
+  const pageWidth = 700;
+  document.querySelectorAll('.system svg').forEach((svg) => {
+    const vb = svg.viewBox.baseVal;
+    if (!vb || !vb.width) return;
+    const height = pageWidth * (vb.height / vb.width);
+    svg.setAttribute('width', String(pageWidth));
+    svg.setAttribute('height', String(height));
+    svg.style.width = `${pageWidth}px`;
+    svg.style.height = `${height}px`;
+    if (svg.parentElement) svg.parentElement.style.height = `${height}px`;
+  });
+});
 
 // URL overrides so a combination is a link.
 const params = new URLSearchParams(window.location.search);

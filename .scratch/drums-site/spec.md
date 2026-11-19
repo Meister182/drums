@@ -31,8 +31,9 @@ Settled as of 2026-11-19:
 - Time signature is selectable: 2/4, 3/4, 4/4, 6/8, 12/8, default 4/4, and is
   printed at the start of each line. Tempo is BPM counting the metronome beat:
   the quarter in x/4, the dotted quarter in 6/8 and 12/8.
-- Sheets lay out up to four bars per line, fewer when the rate needs the room,
-  with the bars connected.
+- Sheets lay out four bars per line on a wide screen, two at medium widths and
+  one on a phone, scaling the notation down so dense rates still fit. Bars are
+  connected. Tuplets that cannot be beamed get a bracket.
 - The sheet renders the whole play order when cells are selected, and the
   current cell alone otherwise. It lives in its own scroll box so the table
   stays put. Clicking a cell does not move the page.
@@ -45,7 +46,8 @@ Settled as of 2026-11-19:
   click order.
 - Copy link puts the whole setup in the URL: signature, rate, sticking, bars,
   tempo, metronome, instruments, visible counts and the play order.
-- PDF prints the score through the browser's print dialog, scaled to the page.
+- PDF prints the score through the browser's print dialog: A4, each system its
+  own block so pages break cleanly, no page-sized blank at the start.
 - Page scroll is preserved across config changes.
 - No alignment helper, no leftover math.
 
