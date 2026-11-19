@@ -1,0 +1,566 @@
+:root {
+  --bg: #f5f4f0;
+  --paper: #fffefb;
+  --ink: #1b1b1a;
+  --muted: #6c6a63;
+  --line: #d9d6cc;
+  --accent: #a63d1b;
+  --accent-soft: #f6e7e1;
+  --select: #1b4f72;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+#app {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+h1,
+h2 {
+  margin: 0;
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: 18px;
+}
+
+p {
+  margin: 0;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.small {
+  font-size: 12px;
+}
+
+.note-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.topbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+}
+
+.hints {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0 4px;
+}
+
+.panel {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+}
+
+.label .muted {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn,
+.play {
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: #fff;
+  padding: 7px 12px;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+.btn.ghost {
+  background: transparent;
+}
+
+.btn.small {
+  padding: 4px 9px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.play {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
+  min-width: 74px;
+}
+
+select,
+input[type="number"],
+input[type="text"] {
+  font: inherit;
+  font-size: 14px;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+}
+
+input[type="number"] {
+  width: 62px;
+}
+
+/* Config ----------------------------------------------------------------- */
+
+.configbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: flex-end;
+  padding: 10px 12px;
+}
+
+.inline-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.inline-field b {
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.configbar select,
+.configbar input[type="number"] {
+  padding: 5px 7px;
+  font-size: 13px;
+}
+
+.unit-label {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.seg {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f1efe8;
+}
+
+.seg-btn {
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 12px;
+  padding: 6px 9px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.seg-btn + .seg-btn {
+  border-left: 1px solid var(--line);
+}
+
+.seg-btn.on {
+  background: var(--ink);
+  color: #fff;
+}
+
+.switch {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--muted);
+  padding-bottom: 8px;
+}
+
+/* Library ---------------------------------------------------------------- */
+
+.library {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+}
+
+.library-save {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-left: auto;
+}
+
+.library-save input {
+  width: 190px;
+}
+
+.notice {
+  font-size: 12px;
+  color: var(--accent);
+}
+
+/* Table ------------------------------------------------------------------ */
+
+.table-panel {
+  padding: 10px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table.grid {
+  border-collapse: collapse;
+}
+
+table.grid th,
+table.grid td {
+  padding: 2px;
+  text-align: center;
+}
+
+table.grid th.corner {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  text-align: left;
+  padding-left: 4px;
+  min-width: 116px;
+}
+
+.colhead {
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 2px 4px;
+  border-radius: 6px;
+  color: var(--muted);
+  min-width: 40px;
+  width: 100%;
+}
+
+.colhead b {
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.colhead span {
+  font-size: 9px;
+  line-height: 1.1;
+  width: 100%;
+  max-width: 56px;
+  overflow-wrap: anywhere;
+}
+
+.colhead.on {
+  background: var(--ink);
+  color: #fff;
+}
+
+.colhead.on b {
+  color: #fff;
+}
+
+.colhead.off {
+  opacity: 0.32;
+}
+
+.colhead.off b {
+  color: var(--muted);
+}
+
+.rowhead {
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  text-align: left;
+  padding: 6px;
+  border-radius: 6px;
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+.rowhead.on {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.cell {
+  position: relative;
+  width: 100%;
+  min-width: 38px;
+  height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  font: inherit;
+  color: #fff;
+}
+
+.cell:hover {
+  background: var(--accent-soft);
+}
+
+.cell.off {
+  opacity: 0.22;
+  cursor: default;
+}
+
+.cell.off:hover {
+  background: #fff;
+}
+
+.cell .num {
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.cell.selected {
+  background: var(--select);
+  border-color: var(--select);
+}
+
+.cell.selected:hover {
+  background: #215b82;
+}
+
+.cell.active {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.cell.playing {
+  box-shadow: 0 0 0 2px #a63d1b inset;
+}
+
+/* Sheet ------------------------------------------------------------------ */
+
+.practice {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sheet-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.sheet-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.sheet {
+  position: relative;
+  width: 100%;
+  max-height: 85vh;
+  overflow: auto;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 4px 2px 0;
+}
+
+.sheet svg {
+  display: block;
+}
+
+.cursor {
+  position: absolute;
+  width: 2px;
+  background: var(--accent);
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.transport-row {
+  min-height: 18px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.status {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.legend {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.credit {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--muted);
+  text-align: center;
+  padding: 0 12px 28px;
+}
+
+.credit a {
+  color: inherit;
+}
+
+.print-only {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  #app {
+    padding: 10px;
+  }
+
+  .configbar {
+    gap: 8px 12px;
+  }
+
+  .library-save {
+    margin-left: 0;
+  }
+
+  .library-save input {
+    width: 150px;
+  }
+
+  .sheet {
+    max-height: 70vh;
+  }
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm;
+  }
+
+  html,
+  body {
+    width: 186mm;
+    margin: 0;
+    background: #fff;
+  }
+
+  #app,
+  .practice {
+    display: block;
+    width: 186mm;
+  }
+
+  .topbar,
+  .hints,
+  .configbar,
+  .library,
+  .table-panel,
+  .sheet-head,
+  .sheet-actions,
+  .transport-row,
+  .legend,
+  .cursor,
+  .credit {
+    display: none !important;
+  }
+
+  #app {
+    max-width: none;
+    padding: 0;
+    gap: 0;
+  }
+
+  .panel {
+    border: 0;
+    padding: 0;
+  }
+
+  .print-only {
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  .sheet {
+    max-height: none;
+    overflow: visible;
+    border: 0;
+    padding: 0;
+  }
+
+  .sheet svg {
+    display: block;
+    width: 186mm !important;
+    height: auto !important;
+  }
+
+  .system {
+    width: 186mm;
+    height: auto !important;
+    break-inside: avoid;
+  }
+}

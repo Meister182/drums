@@ -1,0 +1,7 @@
+Drum samples: MuldjordKit by Lars Muldjord, assembled for the FreePats project
+by Roberto (zenvoid.org). Licensed under CC BY 4.0:
+https://creativecommons.org/licenses/by/4.0/
+Source: https://freepats.zenvoid.org/Percussion/acoustic-drum-kit.html
+Changes: selected one-shots, trimmed tails, peak-normalised, converted to
+16-bit mono 44.1 kHz WAV.
+Drum samples provided by DrumGizmo.org.
