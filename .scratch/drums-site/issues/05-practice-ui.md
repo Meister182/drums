@@ -27,7 +27,14 @@ Live at <https://meister182.github.io/drums/prototype/>, source in `prototype/`.
 Throwaway code: no tests, no persistence, audio is synthesized stand-ins,
 notation uses VexFlow 5 with a hand-drawn sticking row.
 
-Sixth revision after the 2026-11-19 feedback:
+Seventh revision after the 2026-11-19 feedback:
+
+- Fixed a sheet bug where the sticking restarted at each barline while the sound
+  tiled it. The sheet now tiles across the whole cell, so 6/8 with doubles and
+  quarter notes reads RR L | L RR.
+- Added Triples (RRR LLL) and Quadruples (RRRR LLLL) rows.
+
+Sixth revision:
 
 - Playback now highlights the metronome notes too, as a circle around the note
   head on each beat, alongside the vertical stroke cursor.

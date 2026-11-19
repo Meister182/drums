@@ -26,8 +26,8 @@ Settled as of 2026-11-19:
   hides that count, and hiding it removes its cells from the play order. Hidden
   cells are greyed out and disabled.
 - The current combination is chosen by clicking a cell, or a sticking row title.
-- Rows are stickings: singles, doubles, single paradiddle, double paradiddle,
-  paradiddle-diddle. Custom rows are not decided.
+- Rows are stickings: singles, doubles, triples, quadruples, single paradiddle,
+  double paradiddle, paradiddle-diddle. Custom rows are not decided.
 - Time signature is selectable: 2/4, 3/4, 4/4, 6/8, 12/8, default 4/4, and is
   printed at the start of each line. Tempo is BPM counting the metronome beat:
   the quarter in x/4, the dotted quarter in 6/8 and 12/8.
@@ -41,6 +41,7 @@ Settled as of 2026-11-19:
 - Playing highlights the current cell in the table, the current stroke note in
   the sheet, and the metronome note on each beat, scrolling the sheet box to
   keep the notes visible.
+- Sticking tiles continuously across bars in both the sound and the sheet.
 - The metronome is an independent layer on the beats, with its own instrument,
   even when a stroke uses the same instrument.
 - R strokes and L strokes each get an instrument; feet are just instruments.

@@ -26,8 +26,8 @@ on and off, so the table shows only the ones an exercise needs.
 _Avoid_: column, subdivision, group size, notes per click
 
 **Sticking**:
-The hand pattern a run of strokes follows: singles, doubles, single paradiddle,
-double paradiddle, or paradiddle-diddle.
+The hand pattern a run of strokes follows: singles, doubles, triples,
+quadruples, single paradiddle, double paradiddle, or paradiddle-diddle.
 _Avoid_: rudiment, pattern
 
 **R stroke and L stroke**:

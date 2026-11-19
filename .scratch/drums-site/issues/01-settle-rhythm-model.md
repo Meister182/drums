@@ -51,8 +51,8 @@ with a notes-per-click axis and an alignment helper is dropped.
   a foot is just an instrument assigned to a side. Example: R on bass drum, L on
   snare, metronome on the ride, which gives a paradiddle split across snare and
   bass drum with the ride marking the quarters.
-- **Stickings**: singles, doubles, single paradiddle, double paradiddle,
-  paradiddle-diddle. Custom rows are undecided.
+- **Stickings**: singles, doubles, triples, quadruples, single paradiddle,
+  double paradiddle, paradiddle-diddle. Custom rows are undecided.
 
 Worked example: 12 notes per bar on the 8th-triplet column, doubles on snare
 over bass drum, two bars, 80 BPM, metronome on the ride. 24 strokes, sticking
@@ -73,3 +73,9 @@ tiled from the first stroke, ride clicking every quarter.
 - **Ordered play** returns as a prototype, not a decision: shift-click cells to
   build a play order, numbered in click order, with per-cell overrides for bars
   and R/L instruments. See ticket 05.
+
+## Revision 2026-11-19
+
+- Triples (`RRR LLL`) and quadruples (`RRRR LLLL`) added to the sticking rows.
+- Tiling applies to the sheet as well as the sound: a sticking that runs out
+  mid-bar continues into the next bar instead of restarting.

@@ -17,6 +17,8 @@ import {
 const STICKINGS = [
   { id: 'singles', label: 'Singles', pattern: ['R', 'L'] },
   { id: 'doubles', label: 'Doubles', pattern: ['R', 'R', 'L', 'L'] },
+  { id: 'triples', label: 'Triples', pattern: ['R', 'R', 'R', 'L', 'L', 'L'] },
+  { id: 'quadruples', label: 'Quadruples', pattern: ['R', 'R', 'R', 'R', 'L', 'L', 'L', 'L'] },
   { id: 'single-paradiddle', label: 'Single paradiddle', pattern: ['R', 'L', 'R', 'R', 'L', 'R', 'L', 'L'] },
   { id: 'double-paradiddle', label: 'Double paradiddle', pattern: ['R', 'L', 'R', 'L', 'R', 'R', 'L', 'R', 'L', 'R', 'L', 'L'] },
   { id: 'paradiddle-diddle', label: 'Paradiddle-diddle', pattern: ['R', 'L', 'R', 'R', 'L', 'L'] },
@@ -392,15 +394,15 @@ function mountSheet() {
       const staffTop = stave.getYForLine(0);
       ctx.setFillStyle('#1b1b1a');
 
-      const hands = strokeHands(step.sticking, step.n);
-      const barStart = noteIndex;
+      const stepHands = strokeHands(step.sticking, step.bars * step.n);
+      const barOffset = bars[i].barInStep * step.n;
       const groups = [];
       let cursor = 0;
       while (cursor < step.n) {
         const size = Math.min(spec.group, step.n - cursor);
         const group = [];
         for (let k = 0; k < size; k += 1) {
-          const hand = hands[cursor + k];
+          const hand = stepHands[barOffset + cursor + k];
           const def = voiceById(hand === 'R' ? step.right : step.left);
           const note = new StaveNote({
             keys: [def.note || 'c/5'],
@@ -410,6 +412,7 @@ function mountSheet() {
           note.setStemDirection(-1);
           if (spec.dots) Dot.buildAndAttach([note], { all: true });
           note.__index = noteIndex;
+          note.__hand = hand;
           group.push(note);
           noteIndex += 1;
         }
@@ -476,7 +479,7 @@ function mountSheet() {
       for (const note of all) {
         const nx = note.getAbsoluteX();
         const letterX = Math.min(Math.max(nx + 1, x + 14), x + barWidth - 14);
-        ctx.fillText(hands[note.__index - barStart], letterX, staffTop - 58);
+        ctx.fillText(note.__hand, letterX, staffTop - 58);
         noteMeta.push({
           index: note.__index,
           x: (nx + 1) * scale,
