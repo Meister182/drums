@@ -367,7 +367,6 @@ function sheetHTML() {
 // ---------------------------------------------------------------------------
 
 let noteMeta = [];
-let metroMeta = [];
 
 function mountSheet() {
   const host = document.querySelector('[data-sheet]');
@@ -375,7 +374,6 @@ function mountSheet() {
   host.innerHTML = '';
   host.removeAttribute('style');
   noteMeta = [];
-  metroMeta = [];
 
   const width = Math.max(300, Math.floor(host.getBoundingClientRect().width - 8));
   const bars = planBars();
@@ -499,16 +497,6 @@ function mountSheet() {
       beams.forEach((beam) => beam.setContext(ctx).draw());
       tuplets.forEach((tuplet) => tuplet.setContext(ctx).draw());
 
-      metroNotes.forEach((note, b) => {
-        const ys = note.getYs();
-        metroMeta.push({
-          id: step.id,
-          beat: bars[i].barInStep * clicksPerBar() + b,
-          x: (note.getAbsoluteX() + 4) * scale,
-          y: (system * systemHeight + ys[0]) * scale,
-        });
-      });
-
       ctx.setFont('Arial', barWidth < 360 ? 9 : 11, 700);
       ctx.setFillStyle('#1b1b1a');
       for (const note of all) {
@@ -545,11 +533,6 @@ function mountSheet() {
   cursorEl.className = 'cursor';
   cursorEl.hidden = true;
   host.appendChild(cursorEl);
-
-  const dot = document.createElement('div');
-  dot.className = 'metro-dot';
-  dot.hidden = true;
-  host.appendChild(dot);
 }
 
 // ---------------------------------------------------------------------------
@@ -748,7 +731,6 @@ function startSession() {
   session.pass = 0;
   session.passDuration = scheduled.duration;
   session.beat = beat;
-  session.click = (beatsPerBar() * beat) / clicksPerBar();
   session.steps = scheduled.steps;
   session.single = steps.length === 1;
 
@@ -803,13 +785,6 @@ function tick() {
         showCursor(meta);
         scrollCursorIntoView(meta);
       }
-
-      const beatIndex = Math.min(
-        step.bars * clicksPerBar() - 1,
-        Math.max(0, Math.floor((inPass - step.start) / session.click)),
-      );
-      const dot = metroMeta.find((m) => m.id === step.id && m.beat === beatIndex);
-      showMetroDot(dot);
       if (status) {
         const prefix = session.single ? '' : `Step ${session.steps.indexOf(step) + 1} of ${session.steps.length} · `;
         status.textContent = `${prefix}stroke ${local + 1} of ${step.count}`;
@@ -848,20 +823,6 @@ function highlightCell(key) {
 function hideCursor() {
   const cursor = document.querySelector('.cursor');
   if (cursor) cursor.hidden = true;
-  const dot = document.querySelector('.metro-dot');
-  if (dot) dot.hidden = true;
-}
-
-function showMetroDot(meta) {
-  const dot = document.querySelector('.metro-dot');
-  if (!dot) return;
-  if (!meta) {
-    dot.hidden = true;
-    return;
-  }
-  dot.hidden = false;
-  dot.style.left = `${meta.x}px`;
-  dot.style.top = `${meta.y}px`;
 }
 
 function stopSession() {

@@ -431,17 +431,7 @@ table.grid th.corner {
   pointer-events: none;
 }
 
-.metro-dot {
-  position: absolute;
-  width: 18px;
-  height: 18px;
-  margin-left: -9px;
-  margin-top: -9px;
-  border: 2px solid var(--accent);
-  border-radius: 50%;
-  background: rgba(166, 61, 27, 0.16);
-  pointer-events: none;
-}
+
 
 .transport-row {
   min-height: 18px;
@@ -517,8 +507,7 @@ table.grid th.corner {
   .sheet-actions,
   .transport-row,
   .legend,
-  .cursor,
-  .metro-dot {
+  .cursor {
     display: none !important;
   }
 

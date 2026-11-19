@@ -27,7 +27,12 @@ Live at <https://meister182.github.io/drums/prototype/>, source in `prototype/`.
 Throwaway code: no tests, no persistence, audio is synthesized stand-ins,
 notation uses VexFlow 5 with a hand-drawn sticking row.
 
-Tenth revision after the 2026-11-19 feedback:
+Eleventh revision after the 2026-11-19 feedback:
+
+- Dropped the metronome circle highlight during playback. Only the red bar on
+  the current stroke note moves.
+
+Tenth revision:
 
 - Hints moved to just above the grid, and the copy-link mention dropped.
 - "Copy link" renamed "Share".

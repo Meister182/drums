@@ -43,9 +43,9 @@ Settled as of 2026-11-19:
 - The sheet renders the whole play order when cells are selected, and the
   current cell alone otherwise. It lives in its own scroll box, 85vh tall, so
   the table stays put. Clicking a cell does not move the page.
-- Playing highlights the current cell in the table, the current stroke note in
-  the sheet, and the metronome note on each beat, scrolling the sheet box to
-  keep the notes visible.
+- Playing highlights the current cell in the table and the current stroke note
+  in the sheet with a moving red bar, scrolling the sheet box to keep it
+  visible. Metronome notes are not highlighted.
 - Sticking tiles continuously across bars in both the sound and the sheet.
 - The metronome is an independent layer with its own instrument, even when a
   stroke uses the same instrument. Its unit is selectable: the bar (one click),
