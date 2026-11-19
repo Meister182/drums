@@ -378,7 +378,7 @@ table.grid th.corner {
 .sheet {
   position: relative;
   width: 100%;
-  max-height: 72vh;
+  max-height: 85vh;
   overflow: auto;
   background: #fff;
   border: 1px solid var(--line);
@@ -395,6 +395,18 @@ table.grid th.corner {
   width: 2px;
   background: var(--accent);
   opacity: 0.85;
+  pointer-events: none;
+}
+
+.metro-dot {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  margin-left: -9px;
+  margin-top: -9px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  background: rgba(166, 61, 27, 0.16);
   pointer-events: none;
 }
 
@@ -433,7 +445,7 @@ table.grid th.corner {
   }
 
   .sheet {
-    max-height: 60vh;
+    max-height: 70vh;
   }
 
   input[type="range"] {
@@ -472,7 +484,8 @@ table.grid th.corner {
   .sheet-actions,
   .transport-row,
   .legend,
-  .cursor {
+  .cursor,
+  .metro-dot {
     display: none !important;
   }
 
@@ -511,6 +524,7 @@ table.grid th.corner {
   }
 
   .system {
+    height: auto !important;
     break-inside: avoid;
   }
 }

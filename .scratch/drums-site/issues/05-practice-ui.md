@@ -27,41 +27,37 @@ Live at <https://meister182.github.io/drums/prototype/>, source in `prototype/`.
 Throwaway code: no tests, no persistence, audio is synthesized stand-ins,
 notation uses VexFlow 5 with a hand-drawn sticking row.
 
-Fifth revision after the 2026-11-19 feedback:
+Sixth revision after the 2026-11-19 feedback:
 
-- Column titles toggle their notes-per-bar count; hidden counts are greyed and
-  their cells disabled. Hiding a count removes its cells from the play order.
-- No per-cell configs. Hints, then the config bar, then the grid, then the score.
-- Four bars per line on a wide screen, two at medium widths, one on a phone.
-  Dense rates scale the notation down instead of dropping to two bars per line.
-- Triplets that cannot be beamed, such as half and quarter triplets, now get a
-  bracket, so the group reads as connected.
-- Sticking letters are kept clear of the barlines even at 16 notes per bar.
-- The time signature prints at the start of each line.
-- Sheet box is taller, 72vh.
-- Each system is its own SVG block, which fixes the mostly blank first PDF page
-  and lets systems break across pages. Print is A4, at 186mm wide.
-- PDF still uses the browser print dialog, so saving is the dialog's Save as
-  PDF. A one-click download would need a PDF library and is a separate decision.
-- Copy link puts the whole setup in the URL and the address bar follows it.
+- Playback now highlights the metronome notes too, as a circle around the note
+  head on each beat, alongside the vertical stroke cursor.
+- Dense rates cap at three bars per line; twelve notes per bar and below use
+  four, medium widths two, phones one.
+- Systems are 210 units tall so tuplets below the staff never clip, and the
+  sheet box is 85vh.
+- Print keeps the same bars per line as the screen, at A4, with each system as
+  its own block.
+
+Earlier in the same revision: column titles toggle counts, no per-cell configs,
+hints then configs then grid then score, time signature at the start of each
+line, triplet brackets, sticking letters clear of barlines, Copy link, PDF via
+the print dialog.
 
 Reach the teacher's drill with
 `?n=12&s=singles&bars=2&m=1&mv=ride&r=snare&l=kick`.
-A three-cell score: `&sel=singles%7C4,doubles%7C6,singles%7C8`.
+A dense case: `?n=16&s=singles&bars=12&m=1&mv=ride`.
 
-Known prototype limits: tempo changes take effect on the next pass, print has no
-page-size choice beyond A4, the click sound is synthesized, and the score stays
-on screen while an order plays.
+Known prototype limits: tempo changes take effect on the next pass, the print
+dialog has no page-size choice beyond A4, the click is synthesized, and a real
+one-click PDF download is a separate decision.
 
 ### What to react to
 
-1. Is four bars per line at 16 notes per bar readable enough on your screen, or
-   did the scaling go too far?
-2. Do the triplet brackets read right now?
-3. Is the PDF usable, and is the print dialog acceptable or do you want a real
-   one-click download?
-4. Is the copy link doing what you expect?
-5. What is missing before you would use this in a lesson?
+1. Does the metronome highlight land on the ride notes as they sound?
+2. Is three bars per line at dense rates the right cap, and is the sheet box
+   tall enough now?
+3. Is the PDF now the same layout as the screen, with no clipped lines?
+4. Anything missing before you would use this in a lesson?
 
 The resolution is the teacher's verdict per question, then the choices are
 folded into the build spec and the prototype comes off `main`.

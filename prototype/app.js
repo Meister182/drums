@@ -86,9 +86,10 @@ const currentKey = () => `${state.sticking}|${state.notesPerBar}`;
 
 function planSteps() {
   const keys = state.selection.length ? state.selection : [currentKey()];
-  return keys.map((key) => {
+  return keys.map((key, id) => {
     const [stickingId, n] = key.split('|');
     return {
+      id,
       key,
       sticking: stickingId,
       n: Number(n),
@@ -336,6 +337,7 @@ function sheetHTML() {
 // ---------------------------------------------------------------------------
 
 let noteMeta = [];
+let metroMeta = [];
 
 function mountSheet() {
   const host = document.querySelector('[data-sheet]');
@@ -343,16 +345,18 @@ function mountSheet() {
   host.innerHTML = '';
   host.removeAttribute('style');
   noteMeta = [];
+  metroMeta = [];
 
   const width = Math.max(300, Math.floor(host.getBoundingClientRect().width - 8));
   const bars = planBars();
   const maxN = Math.max(...bars.map((b) => b.step.n));
-  const barsPerLine = width >= 900 ? 4 : width >= 560 ? 2 : 1;
+  const wide = width >= 900 ? 4 : width >= 560 ? 2 : 1;
+  const barsPerLine = wide === 4 && maxN > 12 ? 3 : wide;
   const minBarWidth = 26 * maxN + 84;
   const logicalWidth = Math.max(width, barsPerLine * minBarWidth + 20);
   const scale = width / logicalWidth;
   const systems = Math.max(1, Math.ceil(bars.length / barsPerLine));
-  const systemHeight = 186;
+  const systemHeight = 210;
 
   let noteIndex = 0;
 
@@ -438,8 +442,9 @@ function mountSheet() {
       const metroNote = step.metronome && voiceById(step.metroVoice).note
         ? voiceById(step.metroVoice).note
         : null;
+      let metroNotes = [];
       if (metroNote) {
-        const metroNotes = Array.from({ length: beatsPerBar() }, () => {
+        metroNotes = Array.from({ length: beatsPerBar() }, () => {
           const note = new StaveNote({ keys: [metroNote], duration: 'q', clef: 'percussion' });
           note.setStemDirection(1);
           if (compound()) Dot.buildAndAttach([note], { all: true });
@@ -455,6 +460,16 @@ function mountSheet() {
       voices.forEach((v) => v.draw(ctx, stave));
       beams.forEach((beam) => beam.setContext(ctx).draw());
       tuplets.forEach((tuplet) => tuplet.setContext(ctx).draw());
+
+      metroNotes.forEach((note, b) => {
+        const ys = note.getYs();
+        metroMeta.push({
+          id: step.id,
+          beat: bars[i].barInStep * beatsPerBar() + b,
+          x: (note.getAbsoluteX() + 4) * scale,
+          y: (system * systemHeight + ys[0]) * scale,
+        });
+      });
 
       ctx.setFont('Arial', barWidth < 360 ? 9 : 11, 700);
       ctx.setFillStyle('#1b1b1a');
@@ -492,6 +507,11 @@ function mountSheet() {
   cursorEl.className = 'cursor';
   cursorEl.hidden = true;
   host.appendChild(cursorEl);
+
+  const dot = document.createElement('div');
+  dot.className = 'metro-dot';
+  dot.hidden = true;
+  host.appendChild(dot);
 }
 
 // ---------------------------------------------------------------------------
@@ -652,6 +672,7 @@ function schedulePlan(base, steps, beat) {
     const duration = step.bars * barDuration;
     scheduled.push({
       key: step.key,
+      id: step.id,
       start: time - base,
       end: time - base + duration,
       n: step.n,
@@ -742,6 +763,13 @@ function tick() {
         showCursor(meta);
         scrollCursorIntoView(meta);
       }
+
+      const beatIndex = Math.min(
+        step.bars * beatsPerBar() - 1,
+        Math.max(0, Math.floor((inPass - step.start) / session.beat)),
+      );
+      const dot = metroMeta.find((m) => m.id === step.id && m.beat === beatIndex);
+      showMetroDot(dot);
       if (status) {
         const prefix = session.single ? '' : `Step ${session.steps.indexOf(step) + 1} of ${session.steps.length} · `;
         status.textContent = `${prefix}stroke ${local + 1} of ${step.count}`;
@@ -780,6 +808,20 @@ function highlightCell(key) {
 function hideCursor() {
   const cursor = document.querySelector('.cursor');
   if (cursor) cursor.hidden = true;
+  const dot = document.querySelector('.metro-dot');
+  if (dot) dot.hidden = true;
+}
+
+function showMetroDot(meta) {
+  const dot = document.querySelector('.metro-dot');
+  if (!dot) return;
+  if (!meta) {
+    dot.hidden = true;
+    return;
+  }
+  dot.hidden = false;
+  dot.style.left = `${meta.x}px`;
+  dot.style.top = `${meta.y}px`;
 }
 
 function stopSession() {
