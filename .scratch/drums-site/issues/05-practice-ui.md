@@ -3,7 +3,7 @@ id: "05"
 title: Design the practice UI
 labels: [wayfinder:prototype]
 blocked_by: ["01"]
-status: open
+status: closed
 assignee: Alexandre Marques
 ---
 
@@ -99,3 +99,16 @@ one-click PDF download is a separate decision.
 
 The resolution is the teacher's verdict per question, then the choices are
 folded into the build spec and the prototype comes off `main`.
+
+## Resolution
+
+Accepted by the teacher on 2026-11-19. The prototype is the UI reference for the
+build: page order and the single-row config bar, the grid with column titles
+toggling counts and all counts on by default, no per-cell configs, the score
+with connected bars and up to four (three when dense), sticking above, the time
+signature at the start of each line, triplet brackets, the metronome unit
+control, the red stroke cursor only, Share links, and PDF through the print
+dialog.
+
+The prototype stays at `/prototype/` as a reference until the build replaces
+it; it is not product code.

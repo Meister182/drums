@@ -81,6 +81,9 @@ Skills: `grilling`, `domain-modeling`, `prototype`, `research`.
 - [Settle the rhythm model](issues/01-settle-rhythm-model.md):
   notes per bar as the single axis, selectable time signature, configurable
   bars, BPM in beats, independent metronome, R and L stroke instruments.
+- [Design the practice UI](issues/05-practice-ui.md):
+  the accepted prototype is the UI reference: grid, score, config bar, Share
+  links, print to PDF, no per-cell configs.
 
 ## Not yet specified
 
