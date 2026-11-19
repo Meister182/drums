@@ -27,7 +27,15 @@ Live at <https://meister182.github.io/drums/prototype/>, source in `prototype/`.
 Throwaway code: no tests, no persistence, audio is synthesized stand-ins,
 notation uses VexFlow 5 with a hand-drawn sticking row.
 
-Eighth revision after the 2026-11-19 feedback:
+Ninth revision after the 2026-11-19 feedback:
+
+- Fixed dotted notes being placed a beat early. VexFlow needs the dot count on
+  the note value itself, not only a Dot modifier, or the tick duration stays
+  undotted. The dotted metronome click now sits at the true middle of a 6/8 bar,
+  between the strokes, instead of on the second stroke.
+- Added a metronome unit control: Bar, Beat, Eighths, with a visible label.
+
+Eighth revision:
 
 - The metronome unit is selectable: Bar (one click), Beat (the signature's beat,
   two dotted quarters in 6/8) and Eighths. Default is Beat. This explains the

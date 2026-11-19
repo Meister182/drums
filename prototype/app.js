@@ -433,6 +433,7 @@ function mountSheet() {
           const note = new StaveNote({
             keys: [def.note || 'c/5'],
             duration: spec.duration,
+            dots: spec.dots ? 1 : 0,
             clef: 'percussion',
           });
           note.setStemDirection(-1);
@@ -475,7 +476,12 @@ function mountSheet() {
       if (metroNote) {
         const value = clickValue();
         metroNotes = Array.from({ length: clicksPerBar() }, () => {
-          const note = new StaveNote({ keys: [metroNote], duration: value.duration, clef: 'percussion' });
+          const note = new StaveNote({
+            keys: [metroNote],
+            duration: value.duration,
+            dots: value.dots ? 1 : 0,
+            clef: 'percussion',
+          });
           note.setStemDirection(1);
           if (value.dots) Dot.buildAndAttach([note], { all: true });
           return note;

@@ -40,3 +40,9 @@ third library.
 
 Biggest risk: vertical stacking above the staff where sticking, tuplet numbers,
 and up-stemmed cymbal notes compete. Test subdivision 5 and 6 at A4 width first.
+
+## Note for the build
+
+VexFlow 5 dotted notes: put `dots: 1` in the NoteStruct. Attaching only a Dot
+modifier draws the dot but leaves the tick duration undotted, which misplaces
+the note and underfills the voice.

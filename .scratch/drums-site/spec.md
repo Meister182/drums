@@ -31,6 +31,8 @@ Settled as of 2026-11-19:
 - Time signature is selectable: 2/4, 3/4, 4/4, 6/8, 12/8, default 4/4, and is
   printed at the start of each line. Tempo is BPM counting the metronome beat:
   the quarter in x/4, the dotted quarter in 6/8 and 12/8.
+- Dotted note values carry their dot in the note value itself, so their duration
+  and position are correct.
 - Sheets lay out four bars per line on a wide screen, three when the rate is
   above twelve notes per bar, two at medium widths and one on a phone. The
   notation scales to fit; bars are connected. Tuplets that cannot be beamed get
