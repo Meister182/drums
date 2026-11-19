@@ -22,9 +22,9 @@ Settled as of 2026-11-19:
 - Page order: hints, then the config bar, then the grid, then the score.
 - The config bar holds bars, time signature, tempo, metronome, R and L strokes,
   loop, count-in and Play. There are no per-cell configs; everything is shared.
-- The grid always shows 1 to 16 notes per bar. Clicking a column title shows or
-  hides that count, and hiding it removes its cells from the play order. Hidden
-  cells are greyed out and disabled.
+- The grid always shows 1 to 16 notes per bar, all enabled by default. Clicking
+  a column title shows or hides that count, and hiding it removes its cells from
+  the play order. Hidden cells are greyed out and disabled.
 - The current combination is chosen by clicking a cell, or a sticking row title.
 - Rows are stickings: singles, doubles, triples, quadruples, single paradiddle,
   double paradiddle, paradiddle-diddle. Custom rows are not decided.

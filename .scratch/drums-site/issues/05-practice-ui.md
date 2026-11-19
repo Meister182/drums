@@ -29,6 +29,7 @@ notation uses VexFlow 5 with a hand-drawn sticking row.
 
 Seventh revision after the 2026-11-19 feedback:
 
+- All 16 notes-per-bar columns are enabled by default.
 - Fixed a sheet bug where the sticking restarted at each barline while the sound
   tiled it. The sheet now tiles across the whole cell, so 6/8 with doubles and
   quarter notes reads RR L | L RR.

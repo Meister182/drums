@@ -43,7 +43,6 @@ const SIGNATURES = [
 ];
 
 const NOTES_PER_BAR = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
-const COMMON = [1, 2, 3, 4, 6, 8, 12, 16];
 
 const PLAIN = { 4: 'w', 2: 'h', 1: 'q', 0.5: '8', 0.25: '16', 0.125: '32' };
 const DOTTED = { 6: 4, 3: 2, 1.5: 1, 0.75: 0.5, 0.375: 0.25, 0.1875: 0.125 };
@@ -59,7 +58,7 @@ const state = {
   left: 'kick',
   notesPerBar: 12,
   sticking: 'singles',
-  shown: COMMON.slice(),
+  shown: NOTES_PER_BAR.slice(),
   selection: [],
   loop: false,
   countIn: false,
