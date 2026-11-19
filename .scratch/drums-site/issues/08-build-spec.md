@@ -106,3 +106,9 @@ wake lock, non-4/4-family signatures, sequences beyond the play order.
    the play order.
 8. PDF prints the score on A4 with the same bars per line and no blank page.
 9. `npm run build` succeeds and the Pages workflow publishes the site.
+
+## Built
+
+v1 was implemented from this spec and deployed on 2026-11-19 at
+<https://meister182.github.io/drums/>. `npm test` covers the rhythm model and the
+share links; the deploy workflow runs the tests and the build before publishing.

@@ -110,5 +110,5 @@ signature at the start of each line, triplet brackets, the metronome unit
 control, the red stroke cursor only, Share links, and PDF through the print
 dialog.
 
-The prototype stays at `/prototype/` as a reference until the build replaces
-it; it is not product code.
+The prototype stays at `/prototype/` as a reference now that the build is live
+at the root; it is not product code.

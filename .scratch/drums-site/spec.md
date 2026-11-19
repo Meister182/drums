@@ -95,6 +95,11 @@ Skills: `grilling`, `domain-modeling`, `prototype`, `research`.
 
 The map is charted. The build is phase two and proceeds from the build spec.
 
+v1 built and deployed on 2026-11-19 at <https://meister182.github.io/drums/>, with
+the accepted layout, real samples, the saved library, share links and PDF print.
+Deploys run through GitHub Actions. The prototype stays at `/prototype/` for
+reference.
+
 ## Not yet specified
 
 - Custom stickings and how rows are added; hand-foot coordination was mentioned.
