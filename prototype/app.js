@@ -883,9 +883,13 @@ function dragSelect(key) {
   }
 }
 
+function cellLive(cell) {
+  return Boolean(cell) && !cell.disabled && state.shown.includes(Number(cell.dataset.column));
+}
+
 document.addEventListener('mousedown', (event) => {
   const cell = event.target.closest('[data-key]');
-  if (!cell || !event.shiftKey) return;
+  if (!cellLive(cell) || !event.shiftKey) return;
   event.preventDefault();
   const key = cell.dataset.key;
   drag = { mode: state.selection.includes(key) ? 'remove' : 'add', changed: false };
@@ -896,7 +900,7 @@ document.addEventListener('mousedown', (event) => {
 document.addEventListener('mouseover', (event) => {
   if (!drag) return;
   const cell = event.target.closest('[data-key]');
-  if (!cell) return;
+  if (!cellLive(cell)) return;
   dragSelect(cell.dataset.key);
   refreshSelection();
 });
@@ -913,6 +917,7 @@ document.addEventListener('click', (event) => {
   const act = el.dataset.act;
 
   if (el.dataset.key && !act) {
+    if (!state.shown.includes(Number(el.dataset.column))) return;
     setCombo({ sticking: el.dataset.sticking, notesPerBar: Number(el.dataset.column) });
     return;
   }

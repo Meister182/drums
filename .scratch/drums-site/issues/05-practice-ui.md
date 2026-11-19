@@ -31,6 +31,8 @@ Eleventh revision after the 2026-11-19 feedback:
 
 - Dropped the metronome circle highlight during playback. Only the red bar on
   the current stroke note moves.
+- Hidden columns can no longer be selected by shift-click or shift-drag; the
+  handler checks that the column is enabled.
 
 Tenth revision:
 
