@@ -54,6 +54,7 @@ const state = {
   bars: 2,
   metronome: true,
   metroVoice: 'click',
+  metroUnit: 'beat',
   right: 'snare',
   left: 'kick',
   notesPerBar: 12,
@@ -78,6 +79,22 @@ const beatsPerBar = () => {
   return s.den === 8 && s.num % 3 === 0 ? s.num / 3 : s.num;
 };
 const compound = () => signature().den === 8 && signature().num % 3 === 0;
+
+function clicksPerBar() {
+  if (state.metroUnit === 'bar') return 1;
+  if (state.metroUnit === 'eighth') {
+    const s = signature();
+    return s.num * (8 / s.den);
+  }
+  return beatsPerBar();
+}
+
+function clickValue() {
+  const q = barQuarters() / clicksPerBar();
+  if (PLAIN[q]) return { duration: PLAIN[q], dots: 0 };
+  if (DOTTED[q]) return { duration: PLAIN[DOTTED[q]], dots: 1 };
+  return { duration: 'q', dots: 0 };
+}
 
 const stickingById = (id) => STICKINGS.find((s) => s.id === id) || STICKINGS[0];
 const sticking = () => stickingById(state.sticking);
@@ -162,6 +179,7 @@ function shareParams() {
   p.set('bpm', state.bpm);
   p.set('m', state.metronome ? '1' : '0');
   p.set('mv', state.metroVoice);
+  p.set('mu', state.metroUnit);
   p.set('r', state.right);
   p.set('l', state.left);
   p.set('shown', state.shown.join(','));
@@ -234,6 +252,11 @@ const configHTML = () => `
         <select data-act="cfg-metrovoice">
           ${VOICES.filter((v) => v.id !== 'none')
             .map((v) => `<option value="${v.id}" ${state.metroVoice === v.id ? 'selected' : ''}>${v.label}</option>`)
+            .join('')}
+        </select>
+        <select data-act="cfg-metrounit">
+          ${[['bar', 'Bar'], ['beat', 'Beat'], ['eighth', 'Eighths']]
+            .map(([v, label]) => `<option value="${v}" ${state.metroUnit === v ? 'selected' : ''}>${label}</option>`)
             .join('')}
         </select>
       </span>
@@ -313,7 +336,10 @@ function sheetHTML() {
       <header class="sheet-head">
         <div>
           <h2>Score <span class="note-name">${label}</span></h2>
-          <p class="muted">${state.sig} · ${state.bpm} BPM · metronome ${state.metronome ? voiceLabel(state.metroVoice) : 'off'}</p>
+          <p class="muted">
+            ${state.sig} · ${state.bpm} BPM · metronome
+            ${state.metronome ? `${voiceLabel(state.metroVoice)}, ${clicksPerBar()} per bar` : 'off'}
+          </p>
         </div>
         <div class="sheet-actions">
           <button class="btn small" data-act="copy-link">Copy link</button>
@@ -446,10 +472,11 @@ function mountSheet() {
         : null;
       let metroNotes = [];
       if (metroNote) {
-        metroNotes = Array.from({ length: beatsPerBar() }, () => {
-          const note = new StaveNote({ keys: [metroNote], duration: 'q', clef: 'percussion' });
+        const value = clickValue();
+        metroNotes = Array.from({ length: clicksPerBar() }, () => {
+          const note = new StaveNote({ keys: [metroNote], duration: value.duration, clef: 'percussion' });
           note.setStemDirection(1);
-          if (compound()) Dot.buildAndAttach([note], { all: true });
+          if (value.dots) Dot.buildAndAttach([note], { all: true });
           return note;
         });
         voices.push(new Voice({ numBeats: barQuarters(), beatValue: 4 }).setStrict(false).addTickables(metroNotes));
@@ -467,7 +494,7 @@ function mountSheet() {
         const ys = note.getYs();
         metroMeta.push({
           id: step.id,
-          beat: bars[i].barInStep * beatsPerBar() + b,
+          beat: bars[i].barInStep * clicksPerBar() + b,
           x: (note.getAbsoluteX() + 4) * scale,
           y: (system * systemHeight + ys[0]) * scale,
         });
@@ -667,8 +694,9 @@ function schedulePlan(base, steps, beat) {
       hit(hand === 'R' ? step.right : step.left, time + i * stroke, session.sources);
     }
     if (step.metronome) {
-      for (let b = 0; b < step.bars * bpb; b += 1) {
-        hit(step.metroVoice, time + b * beat, session.sources);
+      const interval = barDuration / clicksPerBar();
+      for (let b = 0; b < step.bars * clicksPerBar(); b += 1) {
+        hit(step.metroVoice, time + b * interval, session.sources);
       }
     }
     const duration = step.bars * barDuration;
@@ -711,6 +739,7 @@ function startSession() {
   session.pass = 0;
   session.passDuration = scheduled.duration;
   session.beat = beat;
+  session.click = (beatsPerBar() * beat) / clicksPerBar();
   session.steps = scheduled.steps;
   session.single = steps.length === 1;
 
@@ -767,8 +796,8 @@ function tick() {
       }
 
       const beatIndex = Math.min(
-        step.bars * beatsPerBar() - 1,
-        Math.max(0, Math.floor((inPass - step.start) / session.beat)),
+        step.bars * clicksPerBar() - 1,
+        Math.max(0, Math.floor((inPass - step.start) / session.click)),
       );
       const dot = metroMeta.find((m) => m.id === step.id && m.beat === beatIndex);
       showMetroDot(dot);
@@ -949,6 +978,7 @@ document.addEventListener('change', (event) => {
   if (act === 'cfg-bars') setCombo({ bars: Math.min(16, Math.max(1, Number(el.value) || 1)) });
   else if (act === 'cfg-metronome') setCombo({ metronome: el.checked });
   else if (act === 'cfg-metrovoice') setCombo({ metroVoice: el.value });
+  else if (act === 'cfg-metrounit') setCombo({ metroUnit: el.value });
   else if (act === 'cfg-right') setCombo({ right: el.value });
   else if (act === 'cfg-left') setCombo({ left: el.value });
   else if (act === 'sig') setCombo({ sig: el.value });
@@ -1017,6 +1047,7 @@ state.bars = Math.min(16, Math.max(1, Number(params.get('bars')) || state.bars))
 state.bpm = Math.min(200, Math.max(30, Number(params.get('bpm')) || state.bpm));
 state.metronome = params.get('m') !== '0';
 state.metroVoice = pickValue('mv', VOICES.map((v) => v.id)) || state.metroVoice;
+state.metroUnit = pickValue('mu', ['bar', 'beat', 'eighth']) || state.metroUnit;
 state.right = pickValue('r', VOICES.map((v) => v.id)) || state.right;
 state.left = pickValue('l', VOICES.map((v) => v.id)) || state.left;
 const shown = (params.get('shown') || params.get('rates') || '')

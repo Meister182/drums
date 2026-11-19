@@ -27,7 +27,15 @@ Live at <https://meister182.github.io/drums/prototype/>, source in `prototype/`.
 Throwaway code: no tests, no persistence, audio is synthesized stand-ins,
 notation uses VexFlow 5 with a hand-drawn sticking row.
 
-Seventh revision after the 2026-11-19 feedback:
+Eighth revision after the 2026-11-19 feedback:
+
+- The metronome unit is selectable: Bar (one click), Beat (the signature's beat,
+  two dotted quarters in 6/8) and Eighths. Default is Beat. This explains the
+  apparent polyrhythm: quarter-note strokes against a dotted-quarter beat are a
+  3:2 relationship, which is correct, not a bug. Choosing Bar clicks once per
+  bar; choosing Eighths clicks every eighth.
+
+Seventh revision (same day):
 
 - All 16 notes-per-bar columns are enabled by default.
 - Fixed a sheet bug where the sticking restarted at each barline while the sound

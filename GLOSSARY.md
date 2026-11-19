@@ -41,9 +41,9 @@ instrument assigned to a side.
 _Avoid_: voice, sound, sample, limb
 
 **Metronome**:
-The independent layer that clicks every beat when switched on, on its own
-instrument. It keeps clicking even when a stroke plays the same instrument at
-the same instant.
+The independent layer that clicks when switched on, on its own instrument. The
+unit is the bar, the beat, or eighth notes. It keeps clicking even when a stroke
+plays the same instrument at the same instant.
 _Avoid_: check, click track, pulse
 
 **Combination**:

@@ -42,8 +42,10 @@ Settled as of 2026-11-19:
   the sheet, and the metronome note on each beat, scrolling the sheet box to
   keep the notes visible.
 - Sticking tiles continuously across bars in both the sound and the sheet.
-- The metronome is an independent layer on the beats, with its own instrument,
-  even when a stroke uses the same instrument.
+- The metronome is an independent layer with its own instrument, even when a
+  stroke uses the same instrument. Its unit is selectable: the bar (one click),
+  the beat (the signature's beat, the quarter in x/4 and the dotted quarter in
+  6/8), or eighth notes. Default is the beat.
 - R strokes and L strokes each get an instrument; feet are just instruments.
 - Shift-click and shift-drag build a play order across cells, numbered in
   click order.
