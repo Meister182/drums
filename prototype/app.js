@@ -254,11 +254,12 @@ const configHTML = () => `
             .map((v) => `<option value="${v.id}" ${state.metroVoice === v.id ? 'selected' : ''}>${v.label}</option>`)
             .join('')}
         </select>
-        <select data-act="cfg-metrounit">
+        <span class="unit-label">every</span>
+        <span class="seg">
           ${[['bar', 'Bar'], ['beat', 'Beat'], ['eighth', 'Eighths']]
-            .map(([v, label]) => `<option value="${v}" ${state.metroUnit === v ? 'selected' : ''}>${label}</option>`)
+            .map(([v, label]) => `<button class="seg-btn ${state.metroUnit === v ? 'on' : ''}" data-act="cfg-metrounit" data-value="${v}">${label}</button>`)
             .join('')}
-        </select>
+        </span>
       </span>
     </label>
     ${voiceSelect('right', 'R strokes')}
@@ -960,6 +961,8 @@ document.addEventListener('click', (event) => {
     });
   } else if (act === 'sticking') {
     setCombo({ sticking: el.dataset.value });
+  } else if (act === 'cfg-metrounit') {
+    setCombo({ metroUnit: el.dataset.value });
   } else if (act === 'copy-link') {
     copyLink(el);
   } else if (act === 'pdf') {
@@ -978,7 +981,7 @@ document.addEventListener('change', (event) => {
   if (act === 'cfg-bars') setCombo({ bars: Math.min(16, Math.max(1, Number(el.value) || 1)) });
   else if (act === 'cfg-metronome') setCombo({ metronome: el.checked });
   else if (act === 'cfg-metrovoice') setCombo({ metroVoice: el.value });
-  else if (act === 'cfg-metrounit') setCombo({ metroUnit: el.value });
+  else if (act === 'cfg-metrounit') setCombo({ metroUnit: el.dataset.value });
   else if (act === 'cfg-right') setCombo({ right: el.value });
   else if (act === 'cfg-left') setCombo({ left: el.value });
   else if (act === 'sig') setCombo({ sig: el.value });

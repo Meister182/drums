@@ -205,6 +205,38 @@ input[type="range"] {
   padding-bottom: 8px;
 }
 
+.unit-label {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.seg {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f1efe8;
+}
+
+.seg-btn {
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 12px;
+  padding: 6px 9px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.seg-btn + .seg-btn {
+  border-left: 1px solid var(--line);
+}
+
+.seg-btn.on {
+  background: var(--ink);
+  color: #fff;
+}
+
 .configbar .play {
   margin-left: auto;
 }
