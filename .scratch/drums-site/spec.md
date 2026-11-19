@@ -84,6 +84,9 @@ Skills: `grilling`, `domain-modeling`, `prototype`, `research`.
 - [Design the practice UI](issues/05-practice-ui.md):
   the accepted prototype is the UI reference: grid, score, config bar, Share
   links, print to PDF, no per-cell configs.
+- [Decide the exercise data model](issues/02-data-model.md):
+  one Setup object, saved in `localStorage` under `drums.setups.v1`, shared as
+  URL parameters; custom stickings and file export out of v1.
 
 ## Not yet specified
 
