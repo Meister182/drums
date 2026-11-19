@@ -27,7 +27,14 @@ Live at <https://meister182.github.io/drums/prototype/>, source in `prototype/`.
 Throwaway code: no tests, no persistence, audio is synthesized stand-ins,
 notation uses VexFlow 5 with a hand-drawn sticking row.
 
-Ninth revision after the 2026-11-19 feedback:
+Tenth revision after the 2026-11-19 feedback:
+
+- Hints moved to just above the grid, and the copy-link mention dropped.
+- "Copy link" renamed "Share".
+- The tempo slider replaced with a number box, and the config bar slimmed to one
+  row, with Play moved into the score header next to Share and PDF.
+
+Ninth revision:
 
 - Fixed dotted notes being placed a beat early. VexFlow needs the dot count on
   the note value itself, not only a Dot modifier, or the tick duration stays

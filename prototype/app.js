@@ -218,11 +218,6 @@ const topbarHTML = () => `
   <header class="topbar">
     <div class="brand">Drum exercises <span class="tag">prototype</span></div>
   </header>
-  <p class="hints">
-    Click a column title to show or hide those notes per bar. Shift-click or drag
-    cells to build the score, click a cell to open it, and use Copy link to share
-    this exact setup.
-  </p>
 `;
 
 const voiceSelect = (which, label) => `
@@ -243,8 +238,11 @@ const configHTML = () => `
         ${SIGNATURES.map((s) => `<option value="${s.id}" ${state.sig === s.id ? 'selected' : ''}>${s.id}</option>`).join('')}
       </select>
     </label>
-    <label class="inline-field">Tempo <b data-bpm-label>${state.bpm}</b> BPM
-      <input type="range" min="30" max="200" step="1" value="${state.bpm}" data-act="bpm" />
+    <label class="inline-field">Tempo
+      <span class="row">
+        <input type="number" min="30" max="200" step="1" value="${state.bpm}" data-act="bpm" />
+        <span class="unit-label">BPM</span>
+      </span>
     </label>
     <label class="inline-field">Metronome
       <span class="row">
@@ -266,12 +264,16 @@ const configHTML = () => `
     ${voiceSelect('left', 'L strokes')}
     <label class="switch"><input type="checkbox" data-act="loop" ${state.loop ? 'checked' : ''} /> Loop</label>
     <label class="switch"><input type="checkbox" data-act="countin" ${state.countIn ? 'checked' : ''} /> Count-in</label>
-    <button class="play" data-act="play">${session ? 'Stop' : 'Play'}</button>
   </section>
 `;
 
 function tableHTML() {
   return `
+    <p class="hints">
+      Click a column title to show or hide those notes per bar. Shift-click or
+      drag cells to build the score, click a cell to open it. Grey columns are
+      hidden.
+    </p>
     <section class="panel table-panel">
       <div class="table-wrap">
         <table class="grid">
@@ -304,7 +306,6 @@ function tableHTML() {
           </tbody>
         </table>
       </div>
-      <p class="muted small">Grey columns are hidden. Click their title to bring them back.</p>
     </section>
   `;
 }
@@ -343,7 +344,8 @@ function sheetHTML() {
           </p>
         </div>
         <div class="sheet-actions">
-          <button class="btn small" data-act="copy-link">Copy link</button>
+          <button class="play" data-act="play">${session ? 'Stop' : 'Play'}</button>
+          <button class="btn small" data-act="copy-link">Share</button>
           <button class="btn small" data-act="pdf">PDF</button>
         </div>
       </header>
@@ -985,9 +987,9 @@ document.addEventListener('change', (event) => {
   const act = el.dataset.act;
 
   if (act === 'cfg-bars') setCombo({ bars: Math.min(16, Math.max(1, Number(el.value) || 1)) });
+  else if (act === 'bpm') setCombo({ bpm: Math.min(200, Math.max(30, Number(el.value) || 80)) });
   else if (act === 'cfg-metronome') setCombo({ metronome: el.checked });
   else if (act === 'cfg-metrovoice') setCombo({ metroVoice: el.value });
-  else if (act === 'cfg-metrounit') setCombo({ metroUnit: el.dataset.value });
   else if (act === 'cfg-right') setCombo({ right: el.value });
   else if (act === 'cfg-left') setCombo({ left: el.value });
   else if (act === 'sig') setCombo({ sig: el.value });
@@ -1002,22 +1004,12 @@ document.addEventListener('change', (event) => {
   }
 });
 
-document.addEventListener('input', (event) => {
-  const el = event.target.closest('[data-act]');
-  if (!el) return;
-  if (el.dataset.act === 'bpm') {
-    state.bpm = Number(el.value);
-    const label = document.querySelector('[data-bpm-label]');
-    if (label) label.textContent = state.bpm;
-  }
-});
-
 async function copyLink(button) {
   const url = shareURL();
   try {
     await navigator.clipboard.writeText(url);
     button.textContent = 'Copied';
-    setTimeout(() => { button.textContent = 'Copy link'; }, 1500);
+    setTimeout(() => { button.textContent = 'Share'; }, 1500);
   } catch (error) {
     window.prompt('Copy this link', url);
   }
