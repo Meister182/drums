@@ -17,23 +17,25 @@ Domain: a drums teacher picks a rate (notes per bar) and a sticking, assigns
 instruments to the R and L strokes, sets the bar count, time signature and
 tempo, and plays it. Students open a link and practise.
 
-Settled as of 2026-11-18:
+Settled as of 2026-11-19:
 
-- Page order: table first, then the score panel with its config bar and sheet.
-  The table carries the notes-per-bar chips and a line describing the current
-  cell.
-- The grid always shows 1 to 16 notes per bar. Deselected counts are greyed out
-  and their cells disabled.
+- Page order: hints, then the config bar, then the grid, then the score.
+- The config bar holds bars, time signature, tempo, metronome, R and L strokes,
+  loop, count-in and Play. There are no per-cell configs; everything is shared.
+- The grid always shows 1 to 16 notes per bar. Clicking a column title shows or
+  hides that count, and hiding it removes its cells from the play order. Hidden
+  cells are greyed out and disabled.
+- The current combination is chosen by clicking a cell, or a sticking row title.
 - Rows are stickings: singles, doubles, single paradiddle, double paradiddle,
   paradiddle-diddle. Custom rows are not decided.
-- Time signature is selectable: 2/4, 3/4, 4/4, 6/8, 12/8, default 4/4. Tempo is
-  BPM counting the metronome beat, which is the quarter in x/4 and the dotted
-  quarter in 6/8 and 12/8.
+- Time signature is selectable: 2/4, 3/4, 4/4, 6/8, 12/8, default 4/4, and is
+  printed at the start of each line. Tempo is BPM counting the metronome beat:
+  the quarter in x/4, the dotted quarter in 6/8 and 12/8.
 - Sheets lay out up to four bars per line, fewer when the rate needs the room,
-  with the bars connected and one clef per line.
+  with the bars connected.
 - The sheet renders the whole play order when cells are selected, and the
   current cell alone otherwise. It lives in its own scroll box so the table
-  stays in place, and clicking a cell scrolls the page to it.
+  stays put. Clicking a cell does not move the page.
 - Playing highlights the current cell in the table and the current note in the
   sheet, and scrolls the sheet box to keep the note visible.
 - The metronome is an independent layer on the beats, with its own instrument,
@@ -41,9 +43,9 @@ Settled as of 2026-11-18:
 - R strokes and L strokes each get an instrument; feet are just instruments.
 - Shift-click and shift-drag build a play order across cells, numbered in
   click order.
-- A cell can carry its own bars, metronome and R/L instruments through "Change
-  only this cell". Overridden cells are marked and can be reset. Config changes
-  without that toggle update the shared settings.
+- Copy link puts the whole setup in the URL: signature, rate, sticking, bars,
+  tempo, metronome, instruments, visible counts and the play order.
+- PDF prints the score through the browser's print dialog, scaled to the page.
 - Page scroll is preserved across config changes.
 - No alignment helper, no leftover math.
 
@@ -64,8 +66,8 @@ Skills: `grilling`, `domain-modeling`, `prototype`, `research`.
   live at <https://meister182.github.io/drums/> from `Meister182/drums`,
   legacy Pages on `main`, push to redeploy.
 - [Settle the rhythm model](issues/01-settle-rhythm-model.md):
-  rates as the single axis, selectable time signature, configurable bars, BPM
-  in beats, independent metronome, R and L stroke instruments.
+  notes per bar as the single axis, selectable time signature, configurable
+  bars, BPM in beats, independent metronome, R and L stroke instruments.
 
 ## Not yet specified
 
@@ -74,10 +76,8 @@ Skills: `grilling`, `domain-modeling`, `prototype`, `research`.
 - Whether the metronome rate is configurable beyond the beat.
 - Phone layout: two bars per line at narrow widths needs a smaller notation
   scale, so it currently drops to one.
-- How exercises and play orders are saved and shared: links, files, both.
-- Whether a cell's overrides are a keeper, and whether they extend to rates and
-  stickings.
-- Print layout details beyond PDF export.
+- Whether a saved library or export file is needed beyond share links.
+- Print layout details: page size, margins, how many bars fit on A4.
 
 ## Out of scope
 

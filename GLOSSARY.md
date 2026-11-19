@@ -54,11 +54,6 @@ _Avoid_: exercise, variation, setting
 The numbered list of cells chosen with shift-click, played in that order.
 _Avoid_: sequence, queue, setlist
 
-**Override**:
-Values a single cell carries for itself, currently its bars and its R and L
-instruments, instead of the shared settings.
-_Avoid_: exception, custom cell
-
 **Tiling**:
 Continuing the sticking from one bar into the next without restarting it.
 _Avoid_: looping, carrying over
