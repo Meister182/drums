@@ -72,6 +72,10 @@ p {
   letter-spacing: -0.01em;
 }
 
+.lang-switch {
+  margin-left: auto;
+}
+
 .hints {
   font-size: 12px;
   color: var(--muted);
@@ -346,6 +350,13 @@ table.grid th.corner {
   font-weight: 600;
 }
 
+.cell,
+.rowhead,
+.colhead {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
 .cell {
   position: relative;
   width: 100%;
@@ -431,6 +442,26 @@ table.grid th.corner {
 
 .sheet svg {
   display: block;
+}
+
+.touch-banner {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 10;
+  padding: 9px 14px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 13px;
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.18);
+  max-width: calc(100vw - 32px);
+  text-align: center;
+}
+
+body.touch-selecting {
+  touch-action: none;
 }
 
 .cursor {
